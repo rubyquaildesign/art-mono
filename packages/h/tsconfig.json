@@ -1,0 +1,30 @@
+{
+  "ts-node": {
+    "transpileOnly": true
+    // "compilerOptions": { "module": "CommonJS" }
+  },
+  "compilerOptions": {
+    "module": "ESNext",
+    // "outDir": "dist",
+    // "rootDir": "src",
+    // "baseUrl": "src",
+    "strict": false,
+    "target": "ESNext",
+    "jsx": "react",
+    "importHelpers": false,
+    "isolatedModules": false,
+    "useDefineForClassFields": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"],
+    "skipLibCheck": false,
+    "declaration": true,
+    "declarationDir": "types",
+    "resolveJsonModule": true,
+    "noEmit": false,
+    "types": ["vite/client"]
+  },
+  "include": ["./src"],
+  "exclude": ["node_modules/**/*"]
+}

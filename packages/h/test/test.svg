@@ -1,0 +1,12 @@
+<svg width=300 height=300 viewBox="-3 -3 6 6">
+  <circle cx=-1 cy=-1 r=0.2 />
+  <circle cx=1 cy=-1 r=0.2 />
+  <circle cx=2 cy=0 r=0.2 />
+  <circle cx=1 cy=1 r=0.2 />
+  <circle cx=-1 cy=1 r=0.2 />
+  <circle cx=0.5 cy=0 r=0.2 />
+  <path
+    d="M0,-1L0.875,-0.875L1.5,-0.5L1.75,0L1.5,0.5L1.0625,0.75L0.75,0.5L0.375,0.25L-0.25,0.5L-0.8125,0.625L-1,0L-0.75,-0.75Z"
+    stroke=" black" fill="#0000" stroke-width="0.05" />
+
+</svg>
