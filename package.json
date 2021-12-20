@@ -4,5 +4,28 @@
   "private": true,
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "xo": {
+    "space": 2,
+    "prettier": true,
+    "rules": {
+      "unicorn/filename-case": 0,
+      "unicorn/no-array-reduce": 0,
+      "unicorn/prefer-node-protocol": 0,
+      "import/no-unassigned-import": 0,
+      "@typescript-eslint/no-unsafe-assignment": 0,
+      "@typescript-eslint/no-unsafe-call": 0,
+      "@typescript-eslint/no-unsafe-member-access": 0,
+      "@typescript-eslint/restrict-template-expressions": 0,
+      "@typescript-eslint/unified-signatures": 0,
+      "no-implicit-globals": 0
+    }
+  },
+  "prettier": {
+    "useTabs": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "all",
+    "bracketSpacing": true
+  }
 }

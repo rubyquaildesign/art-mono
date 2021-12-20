@@ -4,6 +4,6 @@
     "transpileOnly": true
     // "compilerOptions": { "module": "CommonJS" }
   },
-  "include": ["./src"],
+  "include": ["./src/**/*"],
   "exclude": ["node_modules"]
 }

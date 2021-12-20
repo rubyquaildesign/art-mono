@@ -1019,7 +1019,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/d3@npm:^7.0.0":
+"@types/d3@npm:^7, @types/d3@npm:^7.0.0":
   version: 7.1.0
   resolution: "@types/d3@npm:7.1.0"
   dependencies:
@@ -2689,7 +2689,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3@npm:^7.1.1":
+"d3@npm:^7.1.1, d3@npm:^7.2.1":
   version: 7.2.1
   resolution: "d3@npm:7.2.1"
   dependencies:
@@ -2971,6 +2971,18 @@ __metadata:
   checksum: 8b26238db91423b2702a7a6d9629d0019c37c415e7b6e75d4b3e8d27e9464e21cac3618dd145f4d4ee96c70cc6ff034227b5b8a0e9c09015a8bdbe6dace3cfb9
   languageName: node
   linkType: hard
+
+"diff-growth@workspace:packages/diff-growth":
+  version: 0.0.0-use.local
+  resolution: "diff-growth@workspace:packages/diff-growth"
+  dependencies:
+    "@rupertofly/h": "workspace:^"
+    "@types/d3": ^7
+    "@types/kdbush": ^3.0.0
+    d3: ^7.2.1
+    kdbush: ^3.0.0
+  languageName: unknown
+  linkType: soft
 
 "diff@npm:^4.0.1":
   version: 4.0.2

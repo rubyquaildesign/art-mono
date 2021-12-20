@@ -1,0 +1,13 @@
+{
+  "name": "diff-growth",
+  "packageManager": "yarn@3.1.1",
+  "dependencies": {
+    "@rupertofly/h": "workspace:^",
+    "d3": "^7.2.1",
+    "kdbush": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/d3": "^7",
+    "@types/kdbush": "^3.0.0"
+  }
+}
