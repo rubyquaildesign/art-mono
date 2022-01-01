@@ -1,0 +1,5 @@
+{
+  "name": "colours",
+  "packageManager": "yarn@3.1.1",
+  "main": "./main.ts"
+}

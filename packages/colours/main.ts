@@ -1,0 +1,16 @@
+export const red = '#ff6188';
+export const purple = '#ab9df2';
+export const blue = '#78dce8';
+export const orange = '#fc9867';
+export const yellow = '#ffd866';
+export const green = '#a9dc76';
+export const grey = '#939293';
+export const black = '#2d2a2e';
+export const white = '#fcfcfa';
+export const fullWhite = '#ffffff';
+export const fullBlack = '#000000';
+export const deepBlue = '#6796e6';
+export const deepRed = '#f44747';
+export const deepPurple = '#b267e6';
+export const lightGrey = '#727072';
+export const silver = '#c1c0c0';
