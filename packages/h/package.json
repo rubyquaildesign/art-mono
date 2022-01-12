@@ -11,7 +11,6 @@
   "files": [
     "dist"
   ],
-  "types": "dist/main.d.ts",
   "scripts": {
     "build:types": "tsc -m amd -t ESNext -d --isolatedModules false  --moduleResolution node --esModuleInterop --jsx react --outFile dist/index.js src/main.ts && rm -rf dist/index.js ",
     "build": "tsup",

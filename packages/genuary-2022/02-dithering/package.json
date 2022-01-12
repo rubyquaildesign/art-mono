@@ -18,6 +18,7 @@
     "xo": "^0.47.0"
   },
   "dependencies": {
+    "@rupertofly/capture-client": "^1.1.1",
     "@rupertofly/h": "workspace:^",
     "colours": "workspace:^",
     "d3": "^7",

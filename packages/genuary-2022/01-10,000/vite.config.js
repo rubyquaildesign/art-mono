@@ -4,11 +4,11 @@ import { defineConfig } from 'vite';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [],
-  build: { target: 'safari15' },
-  // Resolve: {
-  //   alias: {
-  //     'xmlhttprequest-ssl':
-  //       './node_modules/engine.io-client/lib/xmlhttprequest.js',
-  //   },
-  // },
+  build: { target: 'chrome90' },
+  Resolve: {
+    alias: {
+      'xmlhttprequest-ssl':
+        '../../../node_modules/engine.io-client/lib/xmlhttprequest.js',
+    },
+  },
 });

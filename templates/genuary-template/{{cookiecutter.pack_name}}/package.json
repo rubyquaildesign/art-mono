@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "launch": "launchchrome 3000"
+    "launch": "fish -c 'launchchrome 3000'"
   },
   "devDependencies": {
     "typescript": "^4.4.4",
@@ -18,9 +18,10 @@
     "xo": "^0.47.0"
   },
   "dependencies": {
+    "@rupertofly/capture-client": "^1.1.1",
     "@rupertofly/h": "workspace:^",
     "d3": "^7",
-    "simplex-noise": "^3",
+    "open-simplex-noise": "^2.5.0",
     "colours": "workspace:^"
   }
 }

@@ -3,7 +3,10 @@ const DEG = 180 / PI;
 const { sin, cos, atan2 } = Math;
 
 type point = [number, number];
-
+export type TransformMatrix = [
+  [number, number, number],
+  [number, number, number],
+];
 export type Vp = point | number[];
 // @ts-expect-error because reasons
 export class Vec extends Array<number> implements point {
@@ -114,18 +117,23 @@ export class Vec extends Array<number> implements point {
     const t2 = t ** 2;
     return 3 * t2 + 0 * t + 0;
   };
-  static #accCoef1(t) {
+
+  static #accCoef1(t: number) {
     return -6 * t + 6;
   }
-  static #accCoef2(t) {
+
+  static #accCoef2(t: number) {
     return 18 * t - 12;
   }
-  static #accCoef3(t) {
+
+  static #accCoef3(t: number) {
     return -18 * t + 6;
   }
-  static #accCoef4(t) {
+
+  static #accCoef4(t: number) {
     return 6 * t;
   }
+
   static bernsteinCubicBezierCurve([p0, p1, p2, p3]: Vp[], t: number) {
     const A = new Vec(p0).mulScaler(Vec._bezPn1(t));
     const B = new Vec(p1).mulScaler(Vec._bezPn2(t));
@@ -198,6 +206,7 @@ export class Vec extends Array<number> implements point {
     this.y = Math.sin(ang);
     return this.mulScaler(length);
   }
+
   mul(inp: Vp) {
     this.x *= inp[0];
     this.y *= inp[1];
@@ -298,16 +307,19 @@ export class Vec extends Array<number> implements point {
   len() {
     return Math.sqrt(this.lenSq());
   }
+
   limitSq(max: number, value?: number) {
     value = value ?? max;
     if (this.lenSq() > max) this.setLength(value);
     return this;
   }
+
   limit(max: number, value?: number) {
     value = value ?? max;
     if (this.len() > max) this.setLength(value);
     return this;
   }
+
   norm() {
     const length = this.len();
     if (length === 0) {
@@ -331,6 +343,35 @@ export class Vec extends Array<number> implements point {
 
   equals([ix, iy]: Vp) {
     return this.x === ix && this.y === iy;
+  }
+
+  matTransform(mat: TransformMatrix): Vec;
+  matTransform(
+    a: number,
+    b: number,
+    c: number,
+    d: number,
+    e: number,
+    f: number,
+  ): Vec;
+  matTransform(...args: Array<number | TransformMatrix>) {
+    if ((args[0] as TransformMatrix).length !== undefined) {
+      return this._matTransform(args[0] as TransformMatrix);
+    }
+    const a = args as number[];
+    const tm: TransformMatrix = [
+      [a[0], a[1], a[2]],
+      [a[3], a[4], a[5]],
+    ];
+    return this._matTransform(tm);
+  }
+
+  private _matTransform(mat: TransformMatrix) {
+    const _x = mat[0][0] * this.x + mat[0][1] * this.y + mat[0][2];
+    const _y = mat[1][0] * this.x + mat[1][1] * this.y + mat[1][2];
+    this.x = _x;
+    this.y = _y;
+    return this;
   }
 
   private _distX(inp: Vp) {

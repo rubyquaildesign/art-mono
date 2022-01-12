@@ -4,7 +4,6 @@ import * as ns from 'open-simplex-noise';
 import * as c from 'colours';
 import cap from '@rupertofly/capture-client';
 const [wid, hei] = [1080, 1080];
-// eslint-disable
 const canvas = document.querySelector<HTMLCanvasElement>('#canvas')!;
 const ctx = canvas.getContext('2d')!;
 
@@ -25,7 +24,6 @@ const {
   max,
   sqrt,
 } = Math;
-/* eslint-enable */
 // #endregion helpers
 ctx.fillStyle = c.white;
 ctx.strokeStyle = c.black;
@@ -88,10 +86,12 @@ function* renderDrawing() {
     if (t % perFrame === 0) yield;
   }
 }
+
 const draw = renderDrawing();
-async function render() {
+async function render(): Promise<void> {
   draw.next();
   await client.capture();
   window.requestAnimationFrame(render);
 }
-render();
+
+void render();
