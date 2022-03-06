@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "@rupertofly/capture-client": "^1.1.1",
-    "@rupertofly/h": "workspace:^",
-    "colours": "workspace:^",
+    "@rupertofly/h": "*",
+    "colours": "*",
     "d3": "^7",
     "open-simplex-noise": "^2.5.0"
   }

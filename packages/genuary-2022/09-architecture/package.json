@@ -15,12 +15,13 @@
     "prettier": "^2.5.1",
     "typescript": "^4.4.4",
     "vite": "^2.7.2",
-    "xo": "^0.47.0"
+    "xo": "^0.47.0",
+    "town-gen": "^1.0.0"
   },
   "dependencies": {
     "@rupertofly/capture-client": "^1.1.1",
-    "@rupertofly/h": "workspace:^",
-    "colours": "workspace:^",
+    "@rupertofly/h": "*",
+    "colours": "*",
     "d3": "^7",
     "open-simplex-noise": "^2.5.0"
   }

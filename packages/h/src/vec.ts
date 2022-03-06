@@ -32,12 +32,12 @@ export class Vec extends Array<number> implements point {
   constructor(input: Vp);
   constructor(a: Vp | number, b?: number) {
     super(2);
-    if (b === undefined) {
-      this[0] = a[0] || 0;
-      this[1] = a[1] || 0;
-    } else if (typeof a === 'number') {
+    if (typeof a === 'number' && typeof b === 'number') {
       this[0] = a;
       this[1] = b;
+    } else if (Array.isArray(a)) {
+      this[0] = a[0] || 0;
+      this[1] = a[1] || 0;
     }
   }
 
@@ -53,8 +53,22 @@ export class Vec extends Array<number> implements point {
     return d / DEG;
   }
 
+  static determinate(i: Vec, j: Vec) {
+    /* Matrix is  =
+    | i.x  j.x |
+    | i.y  j.y |
+
+    det is equal to (i.x)(j.y) - (j.x)(i.y)
+     */
+    return i.x * j.y - j.x * i.y;
+  }
+
+  static direction(i: Vec, j: Vec, k: Vec) {
+    return Math.sign(Vec.determinate(k.clone().sub(i), j.clone().sub(i)));
+  }
+
   static lerp(p0: Vp, p1: Vp, t: number) {
-    return new Vec(p0).add(new Vec(p1).mulScaler(t)).mulScaler(1 - t);
+    return new Vec(p0).add(new Vec(p1).sub(p0).mulScaler(t));
   }
 
   static DCQuadBeziercurve(p0: Vp, p1: Vp, p2: Vp, t: number) {
@@ -158,6 +172,10 @@ export class Vec extends Array<number> implements point {
     return A.add(B).add(C).add(D);
   }
 
+  distance(a: Vec, b: Vec) {
+    return b.clone().dist(b);
+  }
+
   add(inp: Vp) {
     this.x += inp[0];
     this.y += inp[1];
@@ -179,6 +197,15 @@ export class Vec extends Array<number> implements point {
   subScaler(inp: number) {
     this.x -= inp;
     this.y -= inp;
+    return this;
+  }
+
+  perp(useX = false) {
+    if (useX) {
+      this.x *= -1;
+      return this;
+    }
+    this.y *= -1;
     return this;
   }
 
@@ -261,7 +288,7 @@ export class Vec extends Array<number> implements point {
   }
 
   cross(inp: Vp) {
-    return this.x * inp[1] - this.y * inp[0];
+    return Vec.determinate(this, new Vec(inp[0], inp[1]));
   }
 
   hAngle() {
@@ -329,12 +356,17 @@ export class Vec extends Array<number> implements point {
     return this;
   }
 
+  toString(): string {
+    return `x:${this.x}, y:${this.y}`;
+  }
+
   projectOn(inp: Vp) {
     const [ix, iy] = inp;
     const { x, y } = this;
     const coeff = (x * ix + y * iy) / (ix * ix + iy * iy);
     this.x = coeff * ix;
     this.y = coeff * iy;
+    return this;
   }
 
   isZero() {

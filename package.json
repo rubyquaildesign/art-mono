@@ -26,7 +26,8 @@
       "@typescript-eslint/no-unused-vars": 0,
       "@typescript-eslint/member-ordering": 0,
       "@typescript-eslint/naming-convention": 1,
-      "@typescript-eslint/padding-line-between-statements": 0
+      "@typescript-eslint/padding-line-between-statements": 0,
+      "import/extensions": 0
     }
   },
   "prettier": {

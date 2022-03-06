@@ -1,5 +1,5 @@
 {
-  "name": "01-10,000",
+  "name": "01-10-000",
   "packageManager": "yarn@3.1.1",
   "version": "0.0.0",
   "scripts": {
@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "@rupertofly/capture-client": "^1.1.1",
-    "@rupertofly/h": "workspace:^",
-    "colours": "workspace:^",
+    "@rupertofly/h": "*",
+    "colours": "*",
     "d3": "^7",
     "open-simplex-noise": "^2.5.0",
     "simplex-noise": "^3"

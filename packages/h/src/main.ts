@@ -10,5 +10,6 @@ export * from './getPolygonMinRadius';
 export * from './bohm';
 export * from './catmull';
 export * from './vec';
+export * from './Line';
 export * from './anim/index';
 export * from './xy-point-helpers';

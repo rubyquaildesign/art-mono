@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 import * as ns from 'open-simplex-noise';
 import * as c from 'colours';
 import Capture from '@rupertofly/capture-client';
-
 const [wid, hei] = [1080, 1080];
 const canvas = document.querySelector<HTMLCanvasElement>('#canvas')!;
 const ctx = canvas.getContext('2d')!;
