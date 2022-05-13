@@ -19,7 +19,7 @@ export class Tween<U = number> {
   #reversed = false;
   #delayFrames = 0;
   #currentFrame = 0;
-  #interpFunc?: InterpFunc<U>;
+  #interpFunc: InterpFunc<U> = (t) => ({} as any as U);
   #chainedTweens: Array<Tween<any>> = [];
   #id = seq.nextId();
   #isChainDone = false;

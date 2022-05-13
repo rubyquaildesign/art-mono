@@ -29,6 +29,15 @@ module.exports = {
 				},
         format:['UPPER_CASE','strictCamelCase']
       },
+      {
+        selector: 'variable',
+        modifiers: ['destructured'],
+        filter: {
+					regex: '[- ]',
+					match: false
+				},
+        format:['UPPER_CASE','strictCamelCase','PascalCase']
+      },
       ...rs.slice(1),
       
     ]

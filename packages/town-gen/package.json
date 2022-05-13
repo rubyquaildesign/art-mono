@@ -12,7 +12,8 @@
   "dependencies": {
     "@rupertofly/h": "*",
     "@timohausmann/quadtree-js": "^1.2.5",
-    "d3": "^7.3.0"
+    "d3": "^7.3.0",
+    "simplex-noise": "^3.0.1"
   },
   "devDependencies": {
     "@types/d3": "^7",

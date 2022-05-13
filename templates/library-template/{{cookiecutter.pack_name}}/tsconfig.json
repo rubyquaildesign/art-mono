@@ -15,5 +15,5 @@
     "noUnusedParameters": false,
     "noImplicitReturns": false
   },
-  "include": ["./src", "./main.ts"]
+  "include": ["./src"]
 }

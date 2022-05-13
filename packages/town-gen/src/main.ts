@@ -1,4 +1,6 @@
 import Quadtree from '@timohausmann/quadtree-js';
+import Ns from 'simplex-noise';
+import { randomNormal, RandomNormal } from 'd3';
 import { Vec } from '../../h/index';
 import { PriorityQueue } from './pq';
 import {
@@ -12,8 +14,21 @@ import {
 import { config } from './config';
 import { Segment, Meta, segFactory } from './Segment';
 
-const debug = true;
+const isDebug = true;
+const rnd = () => Math.random();
+const noise = new Ns(Math.random());
 
+const clamp = (input: number, min: number, max: number) => {
+  return input > min ? (input < max ? input : max) : min;
+};
+const simpleClamp = (input: number, size: number) =>
+  clamp(input, -1 * size, size);
+const H_PI = Math.PI / 2;
+const TAU = Math.PI * 2;
+const rndForwardAng = () =>
+  simpleClamp(randomNormal(0, config.forwardAngDev)(), config.forwardAngDev);
+const rndBranchAng = () =>
+  simpleClamp(randomNormal(0, config.branchAngDev)(), config.branchAngDev);
 type SegLimit = {
   x: number;
   y: number;
@@ -21,110 +36,91 @@ type SegLimit = {
   height: number;
   segment: Segment;
 };
-function localConstraints(
-  seg: Segment,
-  segList: Segment[],
-  qTree: Quadtree,
-  debugData: any = {},
-) {
-  const action: {
-    priority: number;
-    function?: () => boolean;
-    meta: { t?: number };
-  } = {
+const localConstraints = (seg: Segment, segList: Segment[]) => {
+  const action: { priority: number; meta: any; function?: () => boolean } = {
     priority: 0,
-    function: undefined,
     meta: {},
   };
-  const quadTreeMatches = qTree.retrieve<SegLimit>(seg.road.limit);
-  const segmentMatches = quadTreeMatches.map((l) => l.segment);
 
-  for (const otherSegment of segmentMatches) {
+  for (const [i, other] of segList.entries()) {
+    if (other === seg) continue;
+
+    // Priority 4 Actions: Intersection Check
     if (action.priority <= 4) {
-      const isIntersecting = seg.road.intersects(otherSegment.road);
-      if (isIntersecting && seg.road.intersectionPoint(otherSegment.road)) {
-        const intPoint = seg.road.intersectionPoint(otherSegment.road);
-        if (
-          intPoint &&
-          (!action.meta?.t || intPoint.tAlongRoad < action.meta.t)
-        ) {
-          action.meta.t = intPoint.tAlongRoad;
+      const intersects = seg.intersectionPoint(other);
+      if (
+        intersects.kind === 'intersect' &&
+        intersects.tFromA > 0.0001 &&
+        intersects.tFromA < 1 - 0.0001
+      ) {
+        const tToOther = intersects.tFromA;
+        const hasT = action.meta.t !== undefined;
+        if (!hasT || action.meta.t > tToOther) {
+          action.meta.t = tToOther;
           action.priority = 4;
           action.function = () => {
-            if (angDiff(otherSegment.dir, seg.dir) < Math.PI / 6) return false;
-            otherSegment.split(intPoint.point, seg, segList, qTree);
-            seg.road.end = intPoint.point;
-            seg.metaInfo.severed = true;
-
+            if (
+              seg.vector.angleBetween(other.vector) <
+              config.interesectionDeviation
+            ) {
+              return false;
+            }
+            other.split(intersects.pt, seg, segList);
+            seg.updateEnd(intersects.pt);
+            seg.meta.severed = true;
+            seg.meta.endReason = 'Crossed Intersection';
+            seg.meta.color = 'cyan';
             return true;
           };
         }
       }
     }
-    if (
-      action.priority <= 3 &&
-      seg.road.end.dist(otherSegment.road.end) <= config.snapDist
-    ) {
-      const point = otherSegment.road.end;
-      action.priority = 3;
-      action.function = () => {
-        seg.road.end = point;
-        seg.metaInfo.severed = true;
-        if (seg.metaInfo.hw) return false;
-        const links = otherSegment.startIsBackwards
-          ? otherSegment.links.forwards
-          : otherSegment.links.backwards;
-        if (
-          links.some((l) => {
-            const { start: ls, end: le } = l.road;
-            const { start: ss, end: se } = seg.road;
-            return (
-              (vecDiff(ls, se) && vecDiff(le, ss)) ||
-              (vecDiff(ls, ss) && vecDiff(le, se))
-            );
-          })
-        ) {
-          seg.metaInfo.endReason = 'reason 3';
-          return false;
-        }
-        for (const link of links) {
-          link.linksForEndContaining(otherSegment)?.push(seg);
-          seg.links.forwards.push(link);
-        }
-        links.push(seg);
-        seg.links.forwards.push(otherSegment);
-        return true;
-      };
+
+    // Priority 3 Actions: Snap to Crossing
+    if (action.priority <= 3) {
+      const dst = seg.end.dist(other.end);
+      if (dst <= config.snapDist) {
+        const point = other.end;
+        action.priority = 3;
+        action.function = () => {
+          seg.updateEnd(point);
+          seg.meta.severed = true;
+          seg.meta.endReason = 'Snapped to crossing';
+          seg.meta.color = 'orange';
+          const links = other.startIsBackwards()
+            ? other.forwardsLinks
+            : other.backwardsLinks;
+          if (links.some((s) => s.isEqualTo(seg))) return false;
+
+          for (const linkedSeg of links) {
+            linkedSeg.linksContainingEnd(other)?.push(seg);
+            seg.forwardsLinks.push(linkedSeg);
+          }
+          links.push(seg);
+          seg.forwardsLinks.push(other);
+          return true;
+        };
+      }
     }
+
+    // Priority 2 Actions: Intersections within Radius
     if (action.priority <= 2) {
-      const { distAlongLine, distToPoint, lineLength, pointOnLine } =
-        distToLine(
-          seg.road.end,
-          otherSegment.road.start,
-          otherSegment.road.end,
-        );
-      if (
-        distToPoint < config.snapDist &&
-        distToPoint > ep &&
-        distAlongLine >= 0 &&
-        distAlongLine <= lineLength
-      ) {
-        const pt = pointOnLine;
+      const ptd = other.projectPointToLine(seg.end);
+      const minD = other.minDistToPoint(seg.end);
+      if (minD < config.snapDist && ptd.onLine) {
+        const point = ptd.pt;
         action.priority = 2;
         action.function = () => {
-          if (
-            angDiff(otherSegment.dir, seg.dir) < Math.PI / 6 &&
-            !seg.metaInfo.hw
-          ) {
-            seg.road.end = pt;
-            seg.metaInfo.severed = true;
-            seg.metaInfo.endReason = 'reason 2';
-            return false;
-          }
-          seg.road.end = pt;
-          seg.metaInfo.severed = true;
-          seg.metaInfo.endReason = 'split due to intersection';
-          otherSegment.split(pt, seg, segList, qTree);
+          seg.updateEnd(point);
+          seg.meta.severed = true;
+          seg.meta.endReason = 'snapped to create intersection';
+          seg.meta.color = 'green';
+
+          const angDiff = seg.vector.angleBetween(other.vector);
+          if (angDiff < config.interesectionDeviation) return false;
+
+          other.split(point, seg, segList);
+
           return true;
         };
       }
@@ -134,165 +130,149 @@ function localConstraints(
     return action.function();
   }
   return true;
-}
+};
 
-export type HeatFunction = (x: number, y: number) => number;
+export type HeatFunction = (v: Vec) => number;
+const getBranches = (
+  previousSeg: Segment,
+  newBranches: Segment[],
+  heatFunc: (pos: Vec) => number,
+) => {
+  const template = (dir: number, length: number, time: number, meta: Meta) =>
+    segFactory.fromDirection(previousSeg.end, time, meta, dir, length);
 
-function globalGoalGenerate(previousSegment: Segment, heatFunc: HeatFunction) {
-  const newBranches: Segment[] = [];
-  if (!previousSegment.metaInfo.severed) {
-    const template = (direction: number, length: number, t: number, q?: Meta) =>
-      segFactory.usingDirection(
-        previousSegment.road.end,
-        t,
-        q,
-        direction,
-        length,
-      );
+  const templateContinue = (dir: number) =>
+    template(dir, previousSeg.length, 0, {
+      hw: previousSeg.meta.hw,
+      branchCount: previousSeg.meta.branchCount ?? 0,
+    });
 
-    const templateContinue = (dir: number) =>
-      template(dir, previousSegment.length, 0, previousSegment.metaInfo);
-    const templateBranch = (dir: number, q?: Meta) =>
-      template(
-        dir,
-        config.segLength,
-        previousSegment.metaInfo.hw ? config.hwBranchDelay : 0,
-        {},
-      );
+  const templateBranch = (dir: number, m: Meta) =>
+    template(
+      dir,
+      config.segLength,
+      (previousSeg.meta.hw ? config.hwBranchDelay : 0) + previousSeg.time,
+      {
+        ...m,
+        branchCount: m.branchCount !== undefined ? m.branchCount + 1 : 1,
+      },
+    );
 
-    const continueStraight = templateContinue(previousSegment.dir);
-    const straightPop = continueStraight.road.getHeat(heatFunc);
+  const continueStraight = templateContinue(previousSeg.vector.absAngle());
 
-    if (previousSegment.metaInfo.hw) {
-      const randStraight = templateContinue(
-        previousSegment.dir + createAngleRand(config.forwardAngDev)(),
-      );
-      const randomPop = randStraight.road.getHeat(heatFunc);
-      let roadPop = 0;
+  const straightPop =
+    heatFunc(continueStraight.start) + heatFunc(continueStraight.end);
 
-      if (randomPop > straightPop) {
-        randStraight.metaInfo.creationReason = 'randomlyForward';
-        newBranches.push(randStraight);
-        roadPop = randomPop;
-      } else {
-        continueStraight.metaInfo.creationReason = 'continuingForward';
-        newBranches.push(continueStraight);
-        roadPop = straightPop;
-      }
-
-      if (roadPop > config.branchPopThreshold) {
-        if (Math.random() < config.hwBranchProb) {
-          const left = templateBranch(
-            previousSegment.dir -
-              Math.PI / 2 +
-              createAngleRand(config.branchAngDev)(),
-          );
-          left.metaInfo.creationReason = 'branching Left';
-          newBranches.push(left);
-        }
-        if (Math.random() < config.branchProb) {
-          const right = templateBranch(
-            previousSegment.dir +
-              Math.PI / 2 +
-              createAngleRand(config.branchAngDev)(),
-          );
-          right.metaInfo.creationReason = 'branching Right';
-          newBranches.push(right);
-        }
-      }
-    } else if (straightPop > config.branchPopThreshold) {
-      continueStraight.metaInfo.creationReason = 'continuingStraight not HW';
+  if (previousSeg.meta.hw) {
+    // Moving Straight Forward
+    const randomStraight = templateContinue(
+      previousSeg.dir() + rndForwardAng(),
+    );
+    const rndStraightPop =
+      heatFunc(randomStraight.start) + heatFunc(randomStraight.end);
+    let roadPop: number;
+    if (rndStraightPop > straightPop) {
+      newBranches.push(randomStraight);
+      roadPop = rndStraightPop;
+    } else {
       newBranches.push(continueStraight);
+      roadPop = straightPop;
     }
 
-    if (straightPop > config.branchPopThreshold) {
-      if (Math.random() < config.branchProb) {
-        const left = templateBranch(
-          previousSegment.dir -
-            Math.PI / 2 +
-            createAngleRand(config.branchAngDev)(),
+    // Do we branch
+    if (roadPop > config.branchPopThreshold) {
+      const lProb = rnd();
+      if (lProb < config.hwBranchProb) {
+        // Should we branch left?
+        newBranches.push(
+          templateBranch(previousSeg.dir() - H_PI + rndBranchAng(), {
+            creationReason: 'hwBranch',
+            hw: false,
+          }),
         );
-        left.metaInfo.creationReason = 'branching Left not HW';
-        newBranches.push(left);
-      }
-      if (Math.random() < config.branchProb) {
-        const right = templateBranch(
-          previousSegment.dir +
-            Math.PI / 2 +
-            createAngleRand(config.branchAngDev)(),
-        );
-        right.metaInfo.creationReason = 'branching Right not HW';
-        newBranches.push(right);
+      } else {
+        const rProb = rnd();
+        if (rProb < config.hwBranchProb) {
+          newBranches.push(
+            templateBranch(previousSeg.dir() + H_PI + rndBranchAng(), {
+              creationReason: 'hwBranch',
+            }),
+          );
+        }
       }
     }
+  } else if (straightPop > config.branchPopThreshold)
+    newBranches.push(continueStraight);
+  if (straightPop > config.branchPopThreshold) {
+    const lRand = rnd();
+    const rRand = rnd();
+    const tsh = config.branchProb;
+    if (rRand < tsh)
+      newBranches.push(
+        templateBranch(previousSeg.dir() - H_PI + rndBranchAng(), {
+          creationReason: 'normalBranch',
+        }),
+      );
+    else if (lRand < tsh)
+      newBranches.push(
+        templateBranch(previousSeg.dir() + H_PI + rndBranchAng(), {
+          creationReason: 'normalBranch',
+        }),
+      );
   }
-  if (newBranches.length === 0) previousSegment.metaInfo.ending = true;
   for (const branch of newBranches) {
-    branch.setupBranchLinks = () => {
-      for (const link of previousSegment.links.forwards) {
-        branch.links.backwards.push(link);
-        link.linksForEndContaining(previousSegment)!.push(branch);
+    branch.setupBranchLinks = function () {
+      for (const link of previousSeg.forwardsLinks) {
+        this.backwardsLinks.push(link);
+        link.linksContainingEnd(previousSeg)?.push(this);
       }
-      previousSegment.links.forwards.push(branch);
-      branch.links.backwards.push(previousSegment);
+      previousSeg.forwardsLinks.push(this);
+      this.backwardsLinks.push(previousSeg);
     };
   }
   return newBranches;
-}
-const testHeatFunction = (x: number, y: number) => {
+};
+
+const testHeatFunction = (vector: Vec) => {
   const c = new Vec(0, 0);
-  const t = new Vec(x, y);
-  return 500 - c.dist(t);
+  const n = noise.noise2D(vector.x / 100, vector.y / 100) * 50;
+  return 200 - c.dist(vector) + n;
 };
 
 export function* generate(heatFunc: HeatFunction = testHeatFunction) {
   const queue = new PriorityQueue<Segment>();
-  const rootSeg = new Segment(
-    new Vec(-300, -100),
-    new Vec(-300 + config.segLength, -100 + config.segLength),
+  const rootSegment = new Segment(
+    new Vec(0, 0),
+    new Vec(config.hwSegLength, 0).rotate(rnd() * TAU),
     0,
-    { hw: true },
+    { hw: true, creationReason: 'root' },
   );
-  const opposite = segFactory.fromExisting(rootSeg);
-  opposite.road.end = new Vec(
-    -300 + -1 * config.segLength,
-    -100 + -1 * config.segLength,
-  );
-  opposite.links.backwards.push(rootSeg);
-  rootSeg.links.backwards.push(opposite);
-  queue.put(rootSeg, rootSeg.timeDelay);
-  queue.put(opposite, opposite.timeDelay);
+  const oppositeSegment = segFactory.fromExisting(rootSegment);
+  const newEnd = rootSegment.end.clone().rotate(Math.PI);
+  oppositeSegment.updateEnd(newEnd);
+  oppositeSegment.backwardsLinks.push(rootSegment);
+  rootSegment.backwardsLinks.push(oppositeSegment);
+  queue.put(rootSegment, rootSegment.time);
+  queue.put(oppositeSegment, oppositeSegment.time);
   const segments: Segment[] = [];
-  const qtree = new Quadtree(
-    { x: -600, y: -600, width: 1200, height: 1200 },
-    12,
-    12,
-  );
-  let ids = 0;
-  while (queue.length > 0 && segments.length < config.segLimit) {
-    const seg = queue.get()!;
 
-    const accepted = localConstraints(seg, segments, qtree);
-    if (accepted) {
-      if (seg.setupBranchLinks) seg.setupBranchLinks();
-      addSegment(seg, segments, qtree);
-      seg.id = ids;
-      ids++;
-      const newSegments = globalGoalGenerate(seg, heatFunc);
-      for (const newSeg of newSegments) {
-        newSeg.timeDelay +=
-          seg.metaInfo.hw && !newSeg.metaInfo.hw
-            ? seg.timeDelay + 5
-            : seg.timeDelay + 1;
-        queue.put(newSeg, newSeg.timeDelay);
+  while (queue.length > 0 && segments.length < config.segLimit) {
+    const rejected: Segment[] = [];
+    const thisSeg = queue.get();
+    if (!thisSeg) continue;
+    const isAccepted = localConstraints(thisSeg, segments);
+    if (isAccepted) {
+      if (thisSeg.setupBranchLinks) thisSeg.setupBranchLinks();
+      segments.push(thisSeg);
+      if (!thisSeg.meta.severed) {
+        for (const seg of getBranches(thisSeg, [], heatFunc)) {
+          seg.time += thisSeg.time + 1;
+          queue.put(seg, seg.time);
+        }
       }
     }
-    const rejects: Segment[] = [];
-    if (!accepted) {
-      rejects.push(seg);
-    }
-    yield { segments, rejects };
+    rejected.push(thisSeg);
+    yield { segments, rejected };
   }
-
-  return { segments, qtree, heatmap: heatFunc, cfg: config };
+  return segments;
 }

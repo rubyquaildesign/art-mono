@@ -46,7 +46,7 @@ export function djikstraPath<T = number>(
   const path = [end];
   if (!cameFrom.has(end)) throw new Error('No Route Found');
   let next = cameFrom.get(end);
-  while (next !== null) {
+  while (next !== undefined && next !== null) {
     path.unshift(next);
     next = cameFrom.get(next);
   }

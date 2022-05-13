@@ -130,4 +130,19 @@ export class Line {
     if (proj.t < 0) return point.dist(this.start);
     return point.dist(this.end);
   }
+
+  clockwiseDir() {
+    return (
+      -1 *
+      Math.sign(new Vec(0, 1).cross(this.vector)) *
+      new Vec(0, 1).angleBetween(this.vector)
+    );
+  }
+
+  isEqualTo(other: Line) {
+    return (
+      (this.start.isEqualTo(other.end) && this.end.isEqualTo(other.start)) ||
+      (this.start.isEqualTo(other.start) && this.end.isEqualTo(other.end))
+    );
+  }
 }

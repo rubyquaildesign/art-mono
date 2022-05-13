@@ -1,44 +1,44 @@
 import type { Tween } from './tween';
 
 export class Group {
-  #tweens: Record<string, Tween<any>> = {};
-  #addedTweens: Record<string, Tween<any>> = {};
+  #tweens: Map<number, Tween<any>> = new Map();
+  #addedTweens: Map<number, Tween<any>> = new Map();
   getTweens() {
-    return Object.keys(this.#tweens).map((id) => this.#tweens[id]);
+    return this.#tweens.values();
   }
 
   removeTweens(): this {
-    this.#tweens = {};
+    this.#tweens.clear();
     return this;
   }
 
   add<U>(tween: Tween<U>) {
-    this.#tweens[tween.id] = tween;
-    this.#addedTweens[tween.id] = tween;
+    this.#tweens.set(tween.id, tween);
+    this.#addedTweens.set(tween.id, tween);
   }
 
-  remove(tw: Tween<any> | number | string) {
+  remove(tw: Tween<any> | number) {
     const id = typeof tw === 'number' || typeof tw === 'string' ? tw : tw.id;
-    this.#tweens[id] = undefined;
-    this.#addedTweens[id] = undefined;
+    this.#tweens.delete(id);
+    this.#addedTweens.delete(id);
   }
 
   update(preserve = false) {
-    let ids = Object.keys(this.#tweens);
+    let ids = [...this.#tweens.keys()];
     if (ids.length === 0) return false;
     while (ids.length > 0) {
-      this.#addedTweens = {};
+      this.#addedTweens = new Map();
       for (const tweenId of ids) {
-        const tween = this.#tweens[tweenId];
+        const tween = this.#tweens.get(tweenId);
         const autostart = !preserve;
         if (!tween) continue;
         const result = tween.update(autostart);
         if (!result && !preserve) {
-          this.#tweens[tweenId] = undefined;
+          this.#tweens.delete(tweenId);
         }
       }
 
-      ids = Object.keys(this.#addedTweens);
+      ids = [...this.#addedTweens.keys()];
     }
   }
 }

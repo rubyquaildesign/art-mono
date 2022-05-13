@@ -1,15 +1,16 @@
 const PI = Math.PI;
+const TAU = PI * 2;
 const DEG = 180 / PI;
 const { sin, cos, atan2 } = Math;
-
-type point = [number, number];
+const EPSILON = 0.000_000_01;
+type Point = [number, number];
 export type TransformMatrix = [
   [number, number, number],
   [number, number, number],
 ];
-export type Vp = point | number[];
+export type Vp = Point | number[];
 // @ts-expect-error because reasons
-export class Vec extends Array<number> implements point {
+export class Vec extends Array<number> implements Point {
   get x() {
     return this[0];
   }
@@ -71,14 +72,14 @@ export class Vec extends Array<number> implements point {
     return new Vec(p0).add(new Vec(p1).sub(p0).mulScaler(t));
   }
 
-  static DCQuadBeziercurve(p0: Vp, p1: Vp, p2: Vp, t: number) {
+  static DcQuadBeziercurve(p0: Vp, p1: Vp, p2: Vp, t: number) {
     const q1 = this.lerp(p0, p1, t);
     const q2 = this.lerp(p1, p2, t);
     const op = this.lerp(q1, q2, t);
     return op;
   }
 
-  static DCCubicBezierCurve([p0, p1, p2, p3]: Vp[], t: number) {
+  static DcCubicBezierCurve([p0, p1, p2, p3]: Vp[], t: number) {
     const { lerp } = this;
     const c1 = lerp(p0, p1, t);
     const c2 = lerp(p1, p2, t);
@@ -172,7 +173,7 @@ export class Vec extends Array<number> implements point {
     return A.add(B).add(C).add(D);
   }
 
-  distance(a: Vec, b: Vec) {
+  static distance(a: Vec, b: Vec) {
     return b.clone().dist(b);
   }
 
@@ -300,7 +301,8 @@ export class Vec extends Array<number> implements point {
   }
 
   absAngle() {
-    return PI + this.hAngle();
+    const ang = this.hAngle();
+    return ang >= 0 ? ang : TAU + ang;
   }
 
   rotate(amt: number) {
@@ -324,6 +326,18 @@ export class Vec extends Array<number> implements point {
 
   dist(inp: Vp) {
     return Math.sqrt(this.distSq(inp));
+  }
+
+  isEqualTo(inp: Vp) {
+    return this.dist(inp) < EPSILON;
+  }
+
+  angleBetween(inp: Vp) {
+    const [x2, y2] = inp;
+    const ang = Math.acos(
+      (this.x * x2 + this.y * y2) / (this.len() * new Vec(x2, y2).len()),
+    );
+    return ang;
   }
 
   lenSq() {
@@ -399,10 +413,10 @@ export class Vec extends Array<number> implements point {
   }
 
   private _matTransform(mat: TransformMatrix) {
-    const _x = mat[0][0] * this.x + mat[0][1] * this.y + mat[0][2];
-    const _y = mat[1][0] * this.x + mat[1][1] * this.y + mat[1][2];
-    this.x = _x;
-    this.y = _y;
+    const x = mat[0][0] * this.x + mat[0][1] * this.y + mat[0][2];
+    const y = mat[1][0] * this.x + mat[1][1] * this.y + mat[1][2];
+    this.x = x;
+    this.y = y;
     return this;
   }
 
