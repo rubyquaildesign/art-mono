@@ -1,18 +1,20 @@
 {
   "name": "art-mono",
-  "packageManager": "yarn@3.1.1",
   "private": true,
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "packages/genuary-2022/*"
-    ]
-  },
   "prettier": {
     "useTabs": false,
     "singleQuote": true,
     "tabWidth": 2,
     "trailingComma": "all",
     "bracketSpacing": true
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "turbo": "^1.2.9",
+    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "eslint": "^8.15.0",
+    "eslint-config-xo-typescript": "^0.50.0",
+    "typescript": "^4.6.4",
+    "xo": "^0.47.0"
   }
 }

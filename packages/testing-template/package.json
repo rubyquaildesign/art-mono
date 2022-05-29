@@ -22,8 +22,10 @@
     "@rupertofly/h": "*",
     "colours": "*",
     "d3": "^7",
+    "immutable": "^4.0.0",
     "iterare": "^1.2.1",
     "open-simplex-noise": "^2.5.0",
-    "town-gen": "*"
+    "town-gen": "*",
+    "wave-function-collapse": "workspace:^0.0.0"
   }
 }

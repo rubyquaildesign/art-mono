@@ -4,6 +4,7 @@ module.exports = {
   space: 2,
   prettier: true,
   rules: {
+    'new-cap':0,
     'unicorn/filename-case': "off",
     'unicorn/no-array-reduce': "off",
     'unicorn/prefer-node-protocol': "off",

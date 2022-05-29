@@ -15,5 +15,5 @@
     "noUnusedParameters": false,
     "noImplicitReturns": false
   },
-  "include": ["./src"]
+  "include": ["./src", "Socket.ts"]
 }
