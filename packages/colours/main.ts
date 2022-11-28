@@ -14,3 +14,14 @@ export const deepRed = '#f44747';
 export const deepPurple = '#b267e6';
 export const lightGrey = '#727072';
 export const silver = '#c1c0c0';
+export const plastic = {
+	black: '#181A1F',
+	grey: '#5F6672',
+	white: '#A9B2C3',
+	red: '#E06C75',
+	yellow: '#E5C07B',
+	green: '#98C379',
+	cyan: '#56B6C2',
+	blue: '#61AFEF',
+	purple: '#B57EDC',
+};

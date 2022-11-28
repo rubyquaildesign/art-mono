@@ -1,430 +1,421 @@
 const PI = Math.PI;
 const TAU = PI * 2;
 const DEG = 180 / PI;
-const { sin, cos, atan2 } = Math;
-const EPSILON = 0.000_000_01;
+const { sin, cos, atan2, round, floor, ceil, abs } = Math;
+const EPSILON = 1e-6;
 type Point = [number, number];
 export type TransformMatrix = [
-  [number, number, number],
-  [number, number, number],
+	[number, number, number],
+	[number, number, number],
 ];
 export type Vp = Point | number[];
-// @ts-expect-error because reasons
-export class Vec extends Array<number> implements Point {
-  get x() {
-    return this[0];
-  }
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const pointConstructor: new (...p: [number, number]) => [number, number] =
+	Array as any;
+export class Vec extends pointConstructor implements Point, Array<number> {
+	static fromObject(input: { x: number; y: number }) {
+		return new Vec([input.x, input.y]);
+	}
 
-  set x(x: number) {
-    this[0] = x;
-  }
+	static rad2deg(r: number) {
+		return r * DEG;
+	}
 
-  get y() {
-    return this[1];
-  }
+	static deg2rad(d: number) {
+		return d / DEG;
+	}
 
-  set y(y: number) {
-    this[1] = y;
-  }
-
-  angle = this.hAngle;
-  magnitude = this.len;
-  constructor(x: number, y: number);
-  constructor(input: Vp);
-  constructor(a: Vp | number, b?: number) {
-    super(2);
-    if (typeof a === 'number' && typeof b === 'number') {
-      this[0] = a;
-      this[1] = b;
-    } else if (Array.isArray(a)) {
-      this[0] = a[0] || 0;
-      this[1] = a[1] || 0;
-    }
-  }
-
-  static fromObject(input: { x: number; y: number }) {
-    return new Vec([input.x, input.y]);
-  }
-
-  static r2d(r: number) {
-    return r * DEG;
-  }
-
-  static d2r(d: number) {
-    return d / DEG;
-  }
-
-  static determinate(i: Vec, j: Vec) {
-    /* Matrix is  =
+	static determinate(i: Vec, j: Vec) {
+		/* Matrix is  =
     | i.x  j.x |
     | i.y  j.y |
 
     det is equal to (i.x)(j.y) - (j.x)(i.y)
      */
-    return i.x * j.y - j.x * i.y;
-  }
+		return i.x * j.y - j.x * i.y;
+	}
 
-  static direction(i: Vec, j: Vec, k: Vec) {
-    return Math.sign(Vec.determinate(k.clone().sub(i), j.clone().sub(i)));
-  }
+	static direction(i: Vec, j: Vec, k: Vec) {
+		return Math.sign(Vec.determinate(k.sub(i), j.sub(i)));
+	}
 
-  static lerp(p0: Vp, p1: Vp, t: number) {
-    return new Vec(p0).add(new Vec(p1).sub(p0).mulScaler(t));
-  }
+	static lerp(p0: Vp, p1: Vp, t: number) {
+		return new Vec(p0).add(new Vec(p1).sub(p0).mul(t));
+	}
 
-  static DcQuadBeziercurve(p0: Vp, p1: Vp, p2: Vp, t: number) {
-    const q1 = this.lerp(p0, p1, t);
-    const q2 = this.lerp(p1, p2, t);
-    const op = this.lerp(q1, q2, t);
-    return op;
-  }
+	static dcQuadBeziercurve(p0: Vp, p1: Vp, p2: Vp, t: number) {
+		const q1 = this.lerp(p0, p1, t);
+		const q2 = this.lerp(p1, p2, t);
+		const op = this.lerp(q1, q2, t);
+		return op;
+	}
 
-  static DcCubicBezierCurve([p0, p1, p2, p3]: Vp[], t: number) {
-    const { lerp } = this;
-    const c1 = lerp(p0, p1, t);
-    const c2 = lerp(p1, p2, t);
-    const c3 = lerp(p2, p3, t);
-    const q1 = lerp(c1, c2, t);
-    const q2 = lerp(c2, c3, t);
-    const op = lerp(q1, q2, t);
-    return op;
-  }
+	static dcCubicBezierCurve([p0, p1, p2, p3]: Vp[], t: number) {
+		const { lerp } = this;
+		const c1 = lerp(p0, p1, t);
+		const c2 = lerp(p1, p2, t);
+		const c3 = lerp(p2, p3, t);
+		const q1 = lerp(c1, c2, t);
+		const q2 = lerp(c2, c3, t);
+		const op = lerp(q1, q2, t);
+		return op;
+	}
 
-  static _bezPn1 = (t: number) => {
-    const t3 = t ** 3;
-    const t2 = t ** 2;
-    return -1 * t3 + 3 * t2 + -3 * t + 1;
-  };
+	static _bezPn1 = (t: number) => {
+		const t3 = t ** 3;
+		const t2 = t ** 2;
+		return -1 * t3 + 3 * t2 + -3 * t + 1;
+	};
 
-  static _bezPn2 = (t: number) => {
-    const t3 = t ** 3;
-    const t2 = t ** 2;
-    return 3 * t3 + -6 * t2 + 3 * t + 0;
-  };
+	static _bezPn2 = (t: number) => {
+		const t3 = t ** 3;
+		const t2 = t ** 2;
+		return 3 * t3 + -6 * t2 + 3 * t + 0;
+	};
 
-  static _bezPn3 = (t: number) => {
-    const t3 = t ** 3;
-    const t2 = t ** 2;
-    return -3 * t3 + 3 * t2 + 0 * t + 0;
-  };
+	static _bezPn3 = (t: number) => {
+		const t3 = t ** 3;
+		const t2 = t ** 2;
+		return -3 * t3 + 3 * t2 + 0 * t + 0;
+	};
 
-  static _bezPn4 = (t: number) => {
-    const t3 = t ** 3;
-    return t3;
-  };
+	static _bezPn4 = (t: number) => {
+		const t3 = t ** 3;
+		return t3;
+	};
 
-  static _derivitivePn1 = (t: number) => {
-    const t2 = t ** 2;
-    return -3 * t2 + 6 * t - 3;
-  };
+	static _derivitivePn1 = (t: number) => {
+		const t2 = t ** 2;
+		return -3 * t2 + 6 * t - 3;
+	};
 
-  static _derivitivePn2 = (t: number) => {
-    const t2 = t ** 2;
-    return 9 * t2 + -12 * t + 3;
-  };
+	static _derivitivePn2 = (t: number) => {
+		const t2 = t ** 2;
+		return 9 * t2 + -12 * t + 3;
+	};
 
-  static _derivitivePn3 = (t: number) => {
-    const t2 = t ** 2;
-    return -9 * t2 + 6 * t + 0;
-  };
+	static _derivitivePn3 = (t: number) => {
+		const t2 = t ** 2;
+		return -9 * t2 + 6 * t + 0;
+	};
 
-  static _derivitivePn4 = (t: number) => {
-    const t2 = t ** 2;
-    return 3 * t2 + 0 * t + 0;
-  };
+	static _derivitivePn4 = (t: number) => {
+		const t2 = t ** 2;
+		return 3 * t2 + 0 * t + 0;
+	};
 
-  static #accCoef1(t: number) {
-    return -6 * t + 6;
-  }
+	static #accCoef1(t: number) {
+		return -6 * t + 6;
+	}
 
-  static #accCoef2(t: number) {
-    return 18 * t - 12;
-  }
+	static #accCoef2(t: number) {
+		return 18 * t - 12;
+	}
 
-  static #accCoef3(t: number) {
-    return -18 * t + 6;
-  }
+	static #accCoef3(t: number) {
+		return -18 * t + 6;
+	}
 
-  static #accCoef4(t: number) {
-    return 6 * t;
-  }
+	static #accCoef4(t: number) {
+		return 6 * t;
+	}
 
-  static bernsteinCubicBezierCurve([p0, p1, p2, p3]: Vp[], t: number) {
-    const A = new Vec(p0).mulScaler(Vec._bezPn1(t));
-    const B = new Vec(p1).mulScaler(Vec._bezPn2(t));
-    const C = new Vec(p2).mulScaler(Vec._bezPn3(t));
-    const D = new Vec(p3).mulScaler(Vec._bezPn4(t));
-    return A.add(B).add(C).add(D);
-  }
+	static distance(a: Vec, b: Vec) {
+		return a.dist(b);
+	}
 
-  static cubicBezierCurveDerivitive([p0, p1, p2, p3]: Vp[], t: number) {
-    const A = new Vec(p0).mulScaler(Vec._derivitivePn1(t));
-    const B = new Vec(p1).mulScaler(Vec._derivitivePn2(t));
-    const C = new Vec(p2).mulScaler(Vec._derivitivePn3(t));
-    const D = new Vec(p3).mulScaler(Vec._derivitivePn4(t));
-    return A.add(B).add(C).add(D);
-  }
+	get x() {
+		return this[0];
+	}
 
-  static cubicBezierCurveSecondDerivitive([p0, p1, p2, p3]: Vp[], t: number) {
-    const A = new Vec(p0).mulScaler(Vec.#accCoef1(t));
-    const B = new Vec(p1).mulScaler(Vec.#accCoef2(t));
-    const C = new Vec(p2).mulScaler(Vec.#accCoef3(t));
-    const D = new Vec(p3).mulScaler(Vec.#accCoef4(t));
-    return A.add(B).add(C).add(D);
-  }
+	get y() {
+		return this[1];
+	}
 
-  static distance(a: Vec, b: Vec) {
-    return b.clone().dist(b);
-  }
+	constructor(x: number, y: number);
+	constructor(input: Vp);
+	constructor(a: Vp | number, b?: number) {
+		if (typeof a === 'number' && typeof b === 'number') {
+			super(a, b);
+		} else if (Array.isArray(a)) {
+			super(a[0] ?? 0, a[1] ?? 0);
+		} else {
+			super(0, 0);
+		}
+	}
 
-  add(inp: Vp) {
-    this.x += inp[0];
-    this.y += inp[1];
-    return this;
-  }
+	*[Symbol.iterator]() {
+		yield this[0];
+		yield this[1];
+		return undefined;
+	}
 
-  addScalar(inp: number) {
-    this.x += inp;
-    this.y += inp;
-    return this;
-  }
+	magnitude() {
+		return this.len();
+	}
 
-  sub(inp: Vp) {
-    this.x -= inp[0];
-    this.y -= inp[1];
-    return this;
-  }
+	updateX(nx: number) {
+		return new Vec(nx, this.y);
+	}
 
-  subScaler(inp: number) {
-    this.x -= inp;
-    this.y -= inp;
-    return this;
-  }
+	updateY(ny: number) {
+		return new Vec(this.x, ny);
+	}
 
-  perp(useX = false) {
-    if (useX) {
-      this.x *= -1;
-      return this;
-    }
-    this.y *= -1;
-    return this;
-  }
+	get tup() {
+		return new Vec(this.x, this.y) as readonly [x: number, y: number];
+	}
 
-  div(inp: Vp) {
-    this.x /= inp[0];
-    this.y /= inp[1];
-    return this;
-  }
+	add(no: number): Vec;
+	add(vec: Vp): Vec;
+	add(inp: Vp | number) {
+		if (typeof inp === 'number') return new Vec(this.x + inp, this.y + inp);
+		return new Vec(this.x + inp[0], this.y + inp[1]);
+	}
 
-  divScaler(inp: number) {
-    if (inp === 0) {
-      this.y = 0;
-      this.x = 0;
-    } else {
-      this.x /= inp;
-      this.y /= inp;
-    }
+	sub(no: number): Vec;
+	sub(vec: Vp): Vec;
+	sub(inp: Vp | number) {
+		if (typeof inp === 'number') return new Vec(this.x - inp, this.y - inp);
+		return new Vec(this.x - inp[0], this.y - inp[1]);
+	}
 
-    return this;
-  }
+	mul(no: number): Vec;
+	mul(vec: Vp): Vec;
+	mul(inp: Vp | number) {
+		if (typeof inp === 'number') return new Vec(this.x * inp, this.y * inp);
+		return new Vec(this.x * inp[0], this.y * inp[1]);
+	}
 
-  setLength(length: number) {
-    const ang = this.angle();
-    this.x = Math.cos(ang);
-    this.y = Math.sin(ang);
-    return this.mulScaler(length);
-  }
+	div(no: number): Vec;
+	div(vec: Vp): Vec;
+	div(inp: Vp | number) {
+		if (typeof inp === 'number') {
+			if (inp === 0) return new Vec(0, 0);
+			return new Vec(this.x / inp, this.y / inp);
+		}
 
-  mul(inp: Vp) {
-    this.x *= inp[0];
-    this.y *= inp[1];
-    return this;
-  }
+		const nx = inp[0] === 0 ? 0 : this.x / inp[0];
+		const ny = inp[1] === 0 ? 0 : this.y / inp[1];
+		return new Vec(nx, ny);
+	}
 
-  mulScaler(inp: number) {
-    this.x *= inp;
-    this.y *= inp;
-    return this;
-  }
+	perpendicular(useX = false) {
+		if (useX) {
+			return this.invertX();
+		}
 
-  invertX() {
-    this.x *= -1;
-    return this;
-  }
+		return this.invertY();
+	}
 
-  invertY() {
-    this.y *= -1;
-    return this;
-  }
+	setLength(length: number) {
+		const ang = this.angle();
+		return this._update(cos(ang), sin(ang)).mul(length);
+	}
 
-  invert() {
-    return this.invertX().invertY();
-  }
+	clampLength(length: number) {
+		if (this.magnitude() > length) return this.setLength(length);
+		return this;
+	}
 
-  round() {
-    this.map((i) => Math.round(i));
-    return this;
-  }
+	invertX() {
+		return this.mul([-1, 1]);
+	}
 
-  mixX(inp: Vp, amnt = 0.5) {
-    this.x = (1 - amnt) * this.x + amnt * inp[0];
-    return this;
-  }
+	invertY() {
+		return this.mul([1, -1]);
+	}
 
-  mixY(inp: Vp, amnt = 0.5) {
-    this.y = (1 - amnt) * this.y + amnt * inp[1];
-    return this;
-  }
+	invert() {
+		return this.mul(-1);
+	}
 
-  mix(inp: Vp, amnt = 0.5) {
-    return this.mixX(inp, amnt).mixY(inp, amnt);
-  }
+	round() {
+		return this._update(round(this.x), round(this.y));
+	}
 
-  clone() {
-    return new Vec(this);
-  }
+	mixX(inp: Vp, amnt = 0.5) {
+		const nx = (1 - amnt) * this.x + amnt * inp[0];
+		return this.updateX(nx);
+	}
 
-  dot(inp: Vp) {
-    return this.x * inp[0] + this.y * inp[1];
-  }
+	mixY(inp: Vp, amnt = 0.5) {
+		const ny = (1 - amnt) * this.y + amnt * inp[1];
+		return this.updateY(ny);
+	}
 
-  cross(inp: Vp) {
-    return Vec.determinate(this, new Vec(inp[0], inp[1]));
-  }
+	mix(inp: Vp, amnt = 0.5) {
+		const nx = (1 - amnt) * this.x + amnt * inp[0];
+		const ny = (1 - amnt) * this.y + amnt * inp[1];
+		return this._update(nx, ny);
+	}
 
-  hAngle() {
-    return atan2(this.y, this.x);
-  }
+	/**
+	* @description Clones vec
+	* @returns  vec
+    @deprecated
+	*/
+	clone() {
+		return new Vec(this);
+	}
 
-  vAngle() {
-    return atan2(this.x, this.y);
-  }
+	call(functor: (n: number) => number): Vec;
+	call(xfunctor: (n: number) => number, yfunctor: (n: number) => number): Vec;
+	call(functor: (n) => number, b?: (n) => number) {
+		if (b) {
+			return this._update(functor(this.x), b(this.y));
+		}
 
-  absAngle() {
-    const ang = this.hAngle();
-    return ang >= 0 ? ang : TAU + ang;
-  }
+		return this._update(functor(this.x), functor(this.y));
+	}
 
-  rotate(amt: number) {
-    const { x, y } = this;
-    const nx = x * cos(amt) - y * sin(amt);
-    const ny = x * sin(amt) + y * cos(amt);
-    this.x = nx;
-    this.y = ny;
-    return this;
-  }
+	dot(inp: Vp) {
+		return this.x * inp[0] + this.y * inp[1];
+	}
 
-  rotateTo(ang: number) {
-    return this.rotate(ang - this.angle());
-  }
+	cross(inp: Vp) {
+		return Vec.determinate(this, new Vec(inp[0], inp[1]));
+	}
 
-  distSq(inp: Vp) {
-    const dx = this._distX(inp);
-    const dy = this._distY(inp);
-    return dx ** 2 + dy ** 2;
-  }
+	angle() {
+		const a = atan2(this.y, this.x);
+		return (TAU + a) % TAU;
+	}
 
-  dist(inp: Vp) {
-    return Math.sqrt(this.distSq(inp));
-  }
+	rotate(amt: number) {
+		const { x, y } = this;
+		const nx = x * cos(amt) - y * sin(amt);
+		const ny = x * sin(amt) + y * cos(amt);
+		return this._update(nx, ny);
+	}
 
-  isEqualTo(inp: Vp) {
-    return this.dist(inp) < EPSILON;
-  }
+	rotateTo(ang: number) {
+		return this.rotate(ang - this.angle());
+	}
 
-  angleBetween(inp: Vp) {
-    const [x2, y2] = inp;
-    const ang = Math.acos(
-      (this.x * x2 + this.y * y2) / (this.len() * new Vec(x2, y2).len()),
-    );
-    return ang;
-  }
+	distSq(inp: Vp) {
+		const dx = this._distX(inp);
+		const dy = this._distY(inp);
+		return dx ** 2 + dy ** 2;
+	}
 
-  lenSq() {
-    const { x, y } = this;
-    return x ** 2 + y ** 2;
-  }
+	dist(inp: Vp) {
+		return Math.sqrt(this.distSq(inp));
+	}
 
-  len() {
-    return Math.sqrt(this.lenSq());
-  }
+	manhattenDist(inp: Vp) {
+		return abs(inp[0] - this.x) + abs(inp[1] - this.y);
+	}
 
-  limitSq(max: number, value?: number) {
-    value = value ?? max;
-    if (this.lenSq() > max) this.setLength(value);
-    return this;
-  }
+	isEqualTo(inp: Vp) {
+		return abs(inp[0] - this.x) < EPSILON && abs(inp[1] - this.y) < EPSILON;
+	}
 
-  limit(max: number, value?: number) {
-    value = value ?? max;
-    if (this.len() > max) this.setLength(value);
-    return this;
-  }
+	angleBetween(inp: Vp) {
+		const [x2, y2] = inp;
+		const ang = Math.acos(
+			(this.x * x2 + this.y * y2) / (this.len() * new Vec(x2, y2).len()),
+		);
+		return ang;
+	}
 
-  norm() {
-    const length = this.len();
-    if (length === 0) {
-      this.x = 1;
-      this.y = 0;
-    } else this.divScaler(length);
-    return this;
-  }
+	lenSq() {
+		const { x, y } = this;
+		return x ** 2 + y ** 2;
+	}
 
-  toString(): string {
-    return `x:${this.x}, y:${this.y}`;
-  }
+	len() {
+		return Math.sqrt(this.lenSq());
+	}
 
-  projectOn(inp: Vp) {
-    const [ix, iy] = inp;
-    const { x, y } = this;
-    const coeff = (x * ix + y * iy) / (ix * ix + iy * iy);
-    this.x = coeff * ix;
-    this.y = coeff * iy;
-    return this;
-  }
+	limitSq(max: number, value?: number) {
+		value = value ?? max;
+		if (this.lenSq() > max) {
+			return this.setLength(value);
+		}
 
-  isZero() {
-    return this.x === 0 && this.y === 0;
-  }
+		return this;
+	}
 
-  equals([ix, iy]: Vp) {
-    return this.x === ix && this.y === iy;
-  }
+	limit(max: number, value?: number) {
+		value = value ?? max;
+		if (this.len() > max) {
+			return this.setLength(value);
+		}
 
-  matTransform(mat: TransformMatrix): Vec;
-  matTransform(
-    a: number,
-    b: number,
-    c: number,
-    d: number,
-    e: number,
-    f: number,
-  ): Vec;
-  matTransform(...args: Array<number | TransformMatrix>) {
-    if ((args[0] as TransformMatrix).length !== undefined) {
-      return this._matTransform(args[0] as TransformMatrix);
-    }
-    const a = args as number[];
-    const tm: TransformMatrix = [
-      [a[0], a[1], a[2]],
-      [a[3], a[4], a[5]],
-    ];
-    return this._matTransform(tm);
-  }
+		return this;
+	}
 
-  private _matTransform(mat: TransformMatrix) {
-    const x = mat[0][0] * this.x + mat[0][1] * this.y + mat[0][2];
-    const y = mat[1][0] * this.x + mat[1][1] * this.y + mat[1][2];
-    this.x = x;
-    this.y = y;
-    return this;
-  }
+	norm() {
+		const length = this.len();
+		if (length === 0) {
+			return this._update(1, 0);
+		}
 
-  private _distX(inp: Vp) {
-    return this.x - inp[0];
-  }
+		return this.div(length);
+	}
 
-  private _distY(inp: Vp) {
-    return this.y - inp[1];
-  }
+	toString(): string {
+		return `x:${this.x}, y:${this.y}`;
+	}
+
+	projectOn(inp: Vp) {
+		const [ix, iy] = inp;
+		const { x, y } = this;
+		const coeff = (x * ix + y * iy) / (ix * ix + iy * iy);
+		return new Vec(inp).mul(coeff);
+	}
+
+	isZero() {
+		return this.x === 0 && this.y === 0;
+	}
+
+	equals([ix, iy]: Vp) {
+		return this.x === ix && this.y === iy;
+	}
+
+	matTransform(mat: TransformMatrix): Vec;
+	matTransform(
+		u: number,
+		i: number,
+		o: number,
+		j: number,
+		k: number,
+		l: number,
+	): Vec;
+	matTransform(...args: Array<number | TransformMatrix>) {
+		if ((args[0] as TransformMatrix).length !== undefined) {
+			return this._matTransform(args[0] as TransformMatrix);
+		}
+
+		const a = args as number[];
+		const tm: TransformMatrix = [
+			[a[0], a[1], a[2]],
+			[a[3], a[4], a[5]],
+		];
+		return this._matTransform(tm);
+	}
+
+	private _update(x: number, y: number) {
+		return new Vec(x, y);
+	}
+
+	private _matTransform(mat: TransformMatrix) {
+		const x = mat[0][0] * this.x + mat[0][1] * this.y + mat[0][2];
+		const y = mat[1][0] * this.x + mat[1][1] * this.y + mat[1][2];
+		return new Vec(x, y);
+	}
+
+	private _distX(inp: Vp) {
+		return this.x - inp[0];
+	}
+
+	private _distY(inp: Vp) {
+		return this.y - inp[1];
+	}
 }
+type P = [number, number];
+const i = new Vec(1, 1);
+const g = i[2];
+const x = [...i];
+Math.atan2(...i.tup);

@@ -15,59 +15,59 @@ a knot vector is a series of knots that specify the intervals for bezier curves 
 */
 
 function ptScalDiv(s: number, pt: Pt) {
-  return [pt[0] / s, pt[1] / s];
+	return [pt[0] / s, pt[1] / s];
 }
 
 function ptScalMult(s: number, pt: Pt) {
-  return pt.map((d) => d * s) as Pt;
+	return pt.map(d => d * s) as Pt;
 }
 
 function ptAdd(ptA: Pt, ptB: Pt) {
-  return [ptA[0] + ptB[0], ptA[1] + ptB[1]] as Pt;
+	return [ptA[0] + ptB[0], ptA[1] + ptB[1]] as Pt;
 }
 
 function computeAffine({
-  ptA,
-  ptB,
-  a,
-  b,
-  c,
+	ptA,
+	ptB,
+	a,
+	b,
+	c,
 }: {
-  ptA: Pt;
-  ptB: Pt;
-  a: number;
-  b: number;
-  c: number;
+	ptA: Pt;
+	ptB: Pt;
+	a: number;
+	b: number;
+	c: number;
 }) {
-  const top = ptAdd(ptScalMult(b - c, ptA), ptScalMult(c - a, ptB));
-  return ptScalDiv(b - a, top) as Pt;
+	const top = ptAdd(ptScalMult(b - c, ptA), ptScalMult(c - a, ptB));
+	return ptScalDiv(b - a, top) as Pt;
 }
 
 function splineSegToBezier({
-  a,
-  b,
-  c,
-  d,
-  controlPoints,
+	a,
+	b,
+	c,
+	d,
+	controlPoints,
 }: {
-  a: number;
-  b: number;
-  c: number;
-  d: number;
-  controlPoints: Pt[];
+	a: number;
+	b: number;
+	c: number;
+	d: number;
+	controlPoints: Pt[];
 }) {
-  const Xab = controlPoints[a];
-  const abc = controlPoints[b];
-  const bcd = controlPoints[c];
-  const cdY = controlPoints[d];
+	const xAB = controlPoints[a];
+	const abc = controlPoints[b];
+	const bcd = controlPoints[c];
+	const cdY = controlPoints[d];
 
-  const bbc = computeAffine({ ptA: abc, ptB: bcd, a, b: d, c: b });
-  const bcc = computeAffine({ ptA: abc, ptB: bcd, a, b: d, c });
-  const abb = computeAffine({ ptA: Xab, ptB: abc, a: a - 1, b: c, c: b });
-  const ccd = computeAffine({ ptA: bcd, ptB: cdY, a: b, b: d + 1, c });
-  const ccc = computeAffine({ ptA: bcc, ptB: ccd, a: b, b: d, c });
-  const bbb = computeAffine({ ptA: abb, ptB: bbc, a, b: c, c: b });
-  return [bbb, bbc, bcc, ccc] as BezierCurve;
+	const bbc = computeAffine({ ptA: abc, ptB: bcd, a, b: d, c: b });
+	const bcc = computeAffine({ ptA: abc, ptB: bcd, a, b: d, c });
+	const abb = computeAffine({ ptA: xAB, ptB: abc, a: a - 1, b: c, c: b });
+	const ccd = computeAffine({ ptA: bcd, ptB: cdY, a: b, b: d + 1, c });
+	const ccc = computeAffine({ ptA: bcc, ptB: ccd, a: b, b: d, c });
+	const bbb = computeAffine({ ptA: abb, ptB: bbc, a, b: c, c: b });
+	return [bbb, bbc, bcc, ccc] as BezierCurve;
 }
 
 // Const testPoints = [
@@ -93,28 +93,28 @@ function splineSegToBezier({
 //   splineSegToBezier({a: 3, b: 4, c: 5, d: 6, controlPoints: testPoints}),
 // );
 export function splineToBezier(pts: Loop, close = false): Loop {
-  if (pts.length < 4) throw new Error('too few points for spline');
-  const cp = [...pts];
-  if (close) {
-    cp.push(...pts.slice(0, 5));
-  } else {
-    const n = pts[pts.length - 1];
-    cp.unshift(pts[0], pts[0], pts[0]);
-    cp.push(n, n, n);
-  }
+	if (pts.length < 4) throw new Error('too few points for spline');
+	const cp = [...pts];
+	if (close) {
+		cp.push(...pts.slice(0, 5));
+	} else {
+		const n = pts[pts.length - 1];
+		cp.unshift(pts[0], pts[0], pts[0]);
+		cp.push(n, n, n);
+	}
 
-  const output: Array<BezierCurve | Pt[]> = [];
-  for (let i = 0; i < cp.length - 4; i++) {
-    const bz = splineSegToBezier({
-      a: i,
-      b: i + 1,
-      c: i + 2,
-      d: i + 3,
-      controlPoints: cp,
-    });
-    output.push(bz);
-    // Else output.push(bz.slice(1, 4));
-  }
+	const output: Array<BezierCurve | Pt[]> = [];
+	for (let i = 0; i < cp.length - 4; i++) {
+		const bz = splineSegToBezier({
+			a: i,
+			b: i + 1,
+			c: i + 2,
+			d: i + 3,
+			controlPoints: cp,
+		});
+		output.push(bz);
+		// Else output.push(bz.slice(1, 4));
+	}
 
-  return output.flat();
+	return output.flat();
 }

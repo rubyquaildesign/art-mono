@@ -15,17 +15,17 @@ type Pt = [number, number] | number[];
 // }
 
 function infoSort(lastPt: Pt, thisPt: Pt, nextPt: Pt, rad: number) {
-  const abs = Math.abs;
-  const minL =
-    Math.min(abs(length(lastPt, thisPt)), abs(length(thisPt, nextPt))) / 2;
-  const intAng =
-    (Math.atan2(thisPt[1] - lastPt[1], thisPt[0] - lastPt[0]) -
-      Math.atan2(thisPt[1] - nextPt[1], thisPt[0] - nextPt[0])) /
-    2;
-  const r = rad;
-  const seg = r / Math.abs(Math.tan(intAng));
+	const abs = Math.abs;
+	const minL =
+		Math.min(abs(length(lastPt, thisPt)), abs(length(thisPt, nextPt))) / 2;
+	const intAng =
+		(Math.atan2(thisPt[1] - lastPt[1], thisPt[0] - lastPt[0]) -
+			Math.atan2(thisPt[1] - nextPt[1], thisPt[0] - nextPt[0])) /
+		2;
+	const r = rad;
+	const seg = r / Math.abs(Math.tan(intAng));
 
-  return { seg, minL, r, intAng };
+	return { seg, minL, r, intAng };
 }
 
 // Function roundedCorner({
@@ -88,67 +88,67 @@ function infoSort(lastPt: Pt, thisPt: Pt, nextPt: Pt, rad: number) {
 // }
 
 function newRd({
-  lastPt,
-  thisPt,
-  nextPt,
-  rad,
-  ctx,
+	lastPt,
+	thisPt,
+	nextPt,
+	rad,
+	ctx,
 }: {
-  lastPt: Pt;
-  thisPt: Pt;
-  nextPt: Pt;
-  rad: number;
-  ctx: CanvasRenderingContext2D | Path;
+	lastPt: Pt;
+	thisPt: Pt;
+	nextPt: Pt;
+	rad: number;
+	ctx: CanvasRenderingContext2D | Path;
 }) {
-  const is = infoSort(lastPt, thisPt, nextPt, rad);
-  let { seg, r } = is;
-  const { minL, intAng } = is;
+	const is = infoSort(lastPt, thisPt, nextPt, rad);
+	let { seg, r } = is;
+	const { minL, intAng } = is;
 
-  if (seg > minL) {
-    seg = minL;
-    r = seg * Math.abs(Math.tan(intAng));
-  }
+	if (seg > minL) {
+		seg = minL;
+		r = seg * Math.abs(Math.tan(intAng));
+	}
 
-  ctx.arcTo(thisPt[0], thisPt[1], nextPt[0], nextPt[1], r);
+	ctx.arcTo(thisPt[0], thisPt[1], nextPt[0], nextPt[1], r);
 }
 
 export function drawRoundLoop(
-  lp: Loop,
-  rad: number,
-  ctx: CanvasRenderingContext2D | Path,
+	lp: Loop,
+	rad: number,
+	ctx: CanvasRenderingContext2D | Path,
 ): void {
-  // Const loopTurning = lp.reduce((sum, [ax, ay], i, array) => {
-  //   const l = array.length;
-  //   const [bx, by] = array[(i + 1) % l];
+	// Const loopTurning = lp.reduce((sum, [ax, ay], i, array) => {
+	//   const l = array.length;
+	//   const [bx, by] = array[(i + 1) % l];
 
-  //   return sum + (bx - ax) * (by + ay);
-  // }, 0);
-  const dY = lp[1][1] - lp[0][1];
-  const dX = lp[1][0] - lp[0][0];
-  const xPerY = dY / dX;
-  const sX = lp[0][0] + dX / 2;
-  const sY = lp[0][1] + (xPerY * dX) / 2;
+	//   return sum + (bx - ax) * (by + ay);
+	// }, 0);
+	const dY = lp[1][1] - lp[0][1];
+	const dX = lp[1][0] - lp[0][0];
+	const xPerY = dY / dX;
+	const sX = lp[0][0] + dX / 2;
+	const sY = lp[0][1] + (xPerY * dX) / 2;
 
-  ctx.moveTo(sX, sY);
-  lp.map((pt, i, array) => {
-    if (i === 0) return;
-    const l = array.length;
-    const preI = (l + i - 1) % l;
-    const pstI = (i + 1) % l;
+	ctx.moveTo(sX, sY);
+	lp.map((pt, i, array) => {
+		if (i === 0) return;
+		const l = array.length;
+		const preI = (l + i - 1) % l;
+		const pstI = (i + 1) % l;
 
-    newRd({ lastPt: array[preI], thisPt: pt, nextPt: array[pstI], rad, ctx });
-    return null;
-  });
-  // NewRd(lp[lp.length - 1], lp[0], [sX, sY], rad, ctx);
-  const is = infoSort(lp[lp.length - 1], lp[0], lp[1], rad);
-  let { seg, r } = is;
-  const { minL, intAng } = is;
+		newRd({ lastPt: array[preI], thisPt: pt, nextPt: array[pstI], rad, ctx });
+		return null;
+	});
+	// NewRd(lp[lp.length - 1], lp[0], [sX, sY], rad, ctx);
+	const is = infoSort(lp[lp.length - 1], lp[0], lp[1], rad);
+	let { seg, r } = is;
+	const { minL, intAng } = is;
 
-  if (seg > minL) {
-    seg = minL;
-    r = seg * Math.abs(Math.tan(intAng));
-  }
+	if (seg > minL) {
+		seg = minL;
+		r = seg * Math.abs(Math.tan(intAng));
+	}
 
-  ctx.arcTo(lp[0][0], lp[0][1], sX, sY, r);
-  ctx.closePath();
+	ctx.arcTo(lp[0][0], lp[0][1], sX, sY, r);
+	ctx.closePath();
 }
