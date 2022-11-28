@@ -1,17 +1,17 @@
 {
 	"name": "@rupertofly/h",
 	"sideEffects": false,
-	"version": "4.4.3",
+	"version": "4.4.5",
 	"type": "module",
 	"description": "A set of useful functions and types for me",
 	"main": "dist/main.cjs",
 	"exports": {
 		".": {
-			"import": "dist/main.js",
-			"require": "dist/main.cjs"
+			"import": "./dist/main.js",
+			"require": "./dist/main.cjs"
 		}
 	},
-	"types": "dist/main.d.ts",
+	"types": "./dist/main.d.ts",
 	"repository": "git@github.com:Rupertofly/h.git",
 	"author": "Ruby Quail <ruby@rubyquail.design>",
 	"license": "MIT",
