@@ -1,0 +1,28 @@
+{
+  "name": "hilbert-circle",
+  "packageManager": "yarn@3.1.1",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "launch": "fish -c 'launchchrome 3000'"
+  },
+  "devDependencies": {
+    "typescript": "^4.4.4",
+    "vite": "^3",
+    "@types/d3": "^7.4.0",
+    "@types/prettier": "^2",
+    "@types/xo": "^0",
+    "prettier": "^2.5.1",
+    "xo": "^0.47.0",
+    "rubys-xo-settings": "git://github.com/rubyquaildesign/rubys-xo-settings"
+  },
+  "dependencies": {
+    "@rupertofly/capture-client": "^1.1.1",
+    "@rupertofly/h": "*",
+    "d3": "^7",
+    "open-simplex-noise": "^2.5.0",
+    "colours": "*"
+  }
+}
