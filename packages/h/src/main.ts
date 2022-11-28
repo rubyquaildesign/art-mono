@@ -1,7 +1,5 @@
 export * from './maths';
 export * from './drawing';
-export * from './splineHelpers';
-export * from './splineFunction';
 export * from './types';
 export * from './global';
 export * from './draw-rounded';
@@ -13,7 +11,5 @@ export * from './vec';
 export * from './line';
 export * from './anim/index';
 export * from './xy-point-helpers';
-export * from './de-boor';
 export * from './b-spline';
 export * from './simple-hilbert';
-export * as bs from './bs-two';

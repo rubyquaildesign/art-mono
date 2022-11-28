@@ -1,7 +1,7 @@
 {
 	"name": "@rupertofly/h",
 	"sideEffects": false,
-	"version": "4.4.2",
+	"version": "4.4.3",
 	"type": "module",
 	"description": "A set of useful functions and types for me",
 	"main": "src/main.ts",
