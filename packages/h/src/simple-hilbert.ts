@@ -1,6 +1,6 @@
 import { Vec } from './vec';
 
-const vec = function rotateQuadrant(
+function rotateQuadrant(
 	level: number,
 	quadrant: Vec,
 	flipX: boolean,
@@ -17,7 +17,7 @@ const vec = function rotateQuadrant(
 	}
 
 	return output;
-};
+}
 
 export function vectorToHilbert(level: number, pos: Vec): number {
 	let shouldFlipX = false;
