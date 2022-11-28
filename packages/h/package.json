@@ -1,7 +1,7 @@
 {
 	"name": "@rupertofly/h",
 	"sideEffects": false,
-	"version": "4.3.2",
+	"version": "4.4.2",
 	"type": "module",
 	"description": "A set of useful functions and types for me",
 	"main": "src/main.ts",
@@ -20,8 +20,7 @@
 		"test-nyan": "node --experimental-specifier-resolution=node --loader ts-node/esm ./test/tests.ts | tap-nyan",
 		"lint": "xo ./src/*",
 		"prepare": "yarn run build",
-		"prepublishOnly": "yarn test && yarn run lint",
-		"preversion": "yarn run lint"
+		"prepublishOnly": "yarn test"
 	},
 	"devDependencies": {
 		"@rupertofly/capture-client": "^1.1.1",
