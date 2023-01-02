@@ -1,4 +1,4 @@
-import { spline } from './splineFunction';
+import { spline } from './_splineFunction';
 
 function ptAdd(ptA: Pt, ptB: Pt) {
 	return [ptA[0] + ptB[0], ptA[1] + ptB[1]] as Pt;

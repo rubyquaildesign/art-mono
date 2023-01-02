@@ -1,9 +1,16 @@
 import * as P from 'd3-path';
 import * as M from './maths';
+import { BSpline } from './b-spline';
+import { bsplineMat } from './splineMatForm';
 
-type Drawable = P.Path | CanvasRenderingContext2D;
+type Drawable =
+	| P.Path
+	| CanvasRenderingContext2D
+	| OffscreenCanvasRenderingContext2D;
 type TDPT = [number, number];
-function isCtx(ctx: Drawable): ctx is CanvasRenderingContext2D {
+function isCtx(
+	ctx: Drawable,
+): ctx is CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D {
 	if (typeof window === 'undefined') return false;
 
 	return ctx instanceof CanvasRenderingContext2D;
@@ -202,4 +209,20 @@ export function drawFauxCubicLoop(
 	}
 
 	if (!isCtx(ctx)) return ctx.toString();
+}
+
+export function drawBSpline(
+	spline: BSpline,
+	ctx: Drawable,
+	resolution = spline.controlPoints.length * 10,
+) {
+	const start = bsplineMat(spline, 0);
+	ctx.moveTo(start.x, start.y);
+	for (let i = 1; i <= resolution; i++) {
+		const t = i / resolution;
+		const pt = bsplineMat(spline, t);
+		ctx.lineTo(pt.x, pt.y);
+	}
+
+	if (spline.type === 'closed') ctx.closePath();
 }

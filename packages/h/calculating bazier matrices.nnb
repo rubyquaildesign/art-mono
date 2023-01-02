@@ -1,0 +1,121 @@
+{
+    "cells": [
+        {
+            "language": "typescript",
+            "source": [
+                "let k = 6"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "function Factorial(n) {\n  let ans=1;\n   \n  for (var i = 2; i <= n; i++)\n      ans = ans * i;\n  return ans;\n}"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "function Cfunc(i,n) {\n  const a = Factorial(n);\n  const b = Factorial(i) * Factorial(n-i);\n  return a/b;\n}"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "Cfunc(3,2)"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "\u001b[33m0.3333333333333333\u001b[39m"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "function Mfunc(i,j,k) {\n  const a = 1 / Factorial(k-1);\n  const b = Cfunc(k-1-i,k-1);\n  let sum = 0;\n  for (let s = j;s <= k-1;s++) {\n    const x = Math.pow(-1,s-j);\n    const y = Cfunc(s-j,k);\n    const z = Math.pow(k-s-1,k-1-i);\n    sum += x*y*z;\n  }\n  return a*b*sum;\n}"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "Mfunc(0,1,2)"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "\u001b[33m0\u001b[39m"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "function bMat(k,factor=1) {\n  const mat:number[][] = []\n  for (let row = 0; row <= k-1; row++) {\n    const rarr:number[] = [];\n    for (let col = 0; col <= k-1; col++) {\n      const d = Mfunc(row,col,k);\n      rarr.push(d/factor);\n    }\n    mat.push(rarr);\n  }\n  return mat;\n}"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "let m = bMat(7, 1 / Factorial(6))\nm.map(r => r.map(v => (Math.round(v*1000)/1000).toString().padStart(4,' ')).join(', '))"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "[",
+                                "  \u001b[32m'   1,   57,  302,  302,   57,    1,    0'\u001b[39m,",
+                                "  \u001b[32m'  -6, -150, -240,  240,  150,    6,    0'\u001b[39m,",
+                                "  \u001b[32m'  15,  135, -150, -150,  135,   15,    0'\u001b[39m,",
+                                "  \u001b[32m' -20,  -20,  160, -160,   20,   20,    0'\u001b[39m,",
+                                "  \u001b[32m'  15,  -45,   30,   30,  -45,   15,    0'\u001b[39m,",
+                                "  \u001b[32m'  -6,   30,  -60,   60,  -30,    6,    0'\u001b[39m,",
+                                "  \u001b[32m'   1,   -6,   15,  -20,   15,   -6,    1'\u001b[39m",
+                                "]"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "let m = require('mathjs')\nlet e = m.matrix(bMat(3, 1 / Factorial(6)));"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.error",
+                            "value": {
+                                "name": "ReferenceError",
+                                "message": "bMat is not defined",
+                                "stack": "    at <Cell 9> [2, 8]\n    at <Cell 9> [6, 46]\n    at Script.runInContext (node:vm:141:12)\n    at Script.runInNewContext (node:vm:146:17)\n    at Object.runInNewContext (node:vm:306:38)\n    at C (/Users/rubyquail/.vscode/extensions/donjayamanne.typescript-notebook-2.0.6/out/extension/server/index.js:2:113345)\n    at t.execCode (/Users/rubyquail/.vscode/extensions/donjayamanne.typescript-notebook-2.0.6/out/extension/server/index.js:2:114312)\n    at k.<anonymous> (/Users/rubyquail/.vscode/extensions/donjayamanne.typescript-notebook-2.0.6/out/extension/server/index.js:2:142156)\n    at k.emit (node:events:513:28)\n    at k.emit (node:domain:489:12)"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

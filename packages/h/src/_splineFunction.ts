@@ -59,7 +59,7 @@ export function splineBuilder(loop: Loop, degree: number, close: boolean) {
 	return outputFunction;
 }
 
-export function LUTBuilder(points: Pt[]) {
+export function lutBuilder(points: Pt[]) {
 	const vecPts = points.map(p => new Vec(p[0], p[1]));
 	const pathSize = vecPts.length;
 	let splineLength = 0;

@@ -1,9 +1,10 @@
 {
-  "extends": "../../tsconfig.json",
-  "ts-node": {
-    "transpileOnly": true
-    // "compilerOptions": { "module": "CommonJS" }
-  },
-  "include": ["./src"],
-  "exclude": ["node_modules"]
+	"extends": "../../tsconfig.json",
+	"ts-node": {
+		"transpileOnly": true
+
+		// "compilerOptions": { "module": "CommonJS" }
+	},
+	"include": ["./src"],
+	"exclude": ["node_modules"]
 }
