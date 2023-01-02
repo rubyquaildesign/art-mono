@@ -53,7 +53,11 @@ export function* splineDeBoor(
 	const high = 1;
 	const knots = spline.knots;
 	const tMapper = (r: number) => (r / resolution) * (high - low) + low;
-	const splineBuilder = deBoor(spline.knots, spline.controlPoints, spline.degree);
+	const splineBuilder = deBoor(
+		spline.knots,
+		spline.controlPoints,
+		spline.degree,
+	);
 	for (const r of range(resolution)) {
 		const tValue = tMapper(r);
 		const findIndex = knots.findIndex(v => v > tValue) - 1;

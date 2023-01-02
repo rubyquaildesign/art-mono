@@ -9,7 +9,7 @@ export type TransformMatrix = [
 	[number, number, number],
 ];
 export type Vp = Point | number[];
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 const pointConstructor: new (...p: [number, number]) => [number, number] =
 	Array as any;
 export class Vec extends pointConstructor implements Point, Array<number> {
