@@ -1,7 +1,7 @@
 {
 	"name": "@rupertofly/h",
 	"sideEffects": false,
-	"version": "4.4.5",
+	"version": "5.4.5",
 	"type": "module",
 	"description": "A set of useful functions and types for me",
 	"main": "dist/main.cjs",
@@ -26,8 +26,7 @@
 		"svg-test": "node --experimental-specifier-resolution=node --loader ts-node/esm ./test/svgTest.ts",
 		"test-nyan": "node --experimental-specifier-resolution=node --loader ts-node/esm ./test/tests.ts | tap-nyan",
 		"lint": "xo ./src/*",
-		"prepare": "yarn run build",
-		"prepublishOnly": "yarn test"
+		"prepare": "pnpm run build"
 	},
 	"devDependencies": {
 		"@rupertofly/capture-client": "^1.2.2",
