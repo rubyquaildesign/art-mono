@@ -1,0 +1,37 @@
+{
+	"name": "@rupertofly/pg-clip",
+	"version": "1.0.1",
+	"description": "",
+	"exports": {
+		".": {
+			"import": "./dist/main.js"
+		}
+	},
+	"module": "./dist/main.js",
+	"type": "module",
+	"main": "./dist/main.js",
+	"types": "./dist/main.d.ts",
+	"scripts": {
+		"build": "tsup",
+		"lint": "xo ./src/*; tsc",
+		"watch": "tsup --watch",
+		"dev": "vite dev",
+		"prepare": "pnpm run build"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "MIT",
+	"devDependencies": {
+		"@types/d3": "^7.4.0",
+		"d3-array": "^3.2.1",
+		"rubys-xo-settings": "github:rubyquaildesign/rubys-xo-settings",
+		"tsup": "^6.5.0",
+		"typescript": "^4.9.4",
+		"vite": "^4.0.4",
+		"xo": "^0.53.1"
+	},
+	"dependencies": {
+		"@rupertofly/h": "workspace:*",
+		"js-angusj-clipper": "^1.2.1"
+	}
+}
