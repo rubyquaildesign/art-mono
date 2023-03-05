@@ -15,7 +15,8 @@
     "@types/prettier": "^2",
     "@types/xo": "^0",
     "prettier": "^2.5.1",
-    "xo": "^0.47.0"
+    "xo": "^0.47.0",
+    "rubys-xo-settings": "git://github.com/rubyquaildesign/rubys-xo-settings"
   },
   "dependencies": {
     "@rupertofly/capture-client": "^1.1.1",

@@ -1,0 +1,4 @@
+{
+  "pack_name": "test",
+  "use_regl": ["no", "yes"]
+}

@@ -3,8 +3,12 @@ const rs = test.rules['@typescript-eslint/naming-convention'];
 module.exports = {
   space: 2,
   prettier: true,
+  ignores:['*.d.ts','*.js'],
   rules: {
-    'new-cap':0,
+    'no-labels':['error',{allowLoop:true}],
+    'capitalized-comments':0,
+    'new-cap': 0,
+    'no-lone-blocks':0,
     'unicorn/filename-case': "off",
     'unicorn/no-array-reduce': "off",
     'unicorn/prefer-node-protocol': "off",

@@ -1,3 +1,6 @@
+import { type toVec } from './xy-point-helpers';
+import { Matrix } from './matrices';
+
 const PI = Math.PI;
 const TAU = PI * 2;
 const DEG = 180 / PI;
@@ -41,83 +44,6 @@ export class Vec extends pointConstructor implements Point, Array<number> {
 
 	static lerp(p0: Vp, p1: Vp, t: number) {
 		return new Vec(p0).add(new Vec(p1).sub(p0).mul(t));
-	}
-
-	static dcQuadBeziercurve(p0: Vp, p1: Vp, p2: Vp, t: number) {
-		const q1 = this.lerp(p0, p1, t);
-		const q2 = this.lerp(p1, p2, t);
-		const op = this.lerp(q1, q2, t);
-		return op;
-	}
-
-	static dcCubicBezierCurve([p0, p1, p2, p3]: Vp[], t: number) {
-		const { lerp } = this;
-		const c1 = lerp(p0, p1, t);
-		const c2 = lerp(p1, p2, t);
-		const c3 = lerp(p2, p3, t);
-		const q1 = lerp(c1, c2, t);
-		const q2 = lerp(c2, c3, t);
-		const op = lerp(q1, q2, t);
-		return op;
-	}
-
-	static _bezPn1 = (t: number) => {
-		const t3 = t ** 3;
-		const t2 = t ** 2;
-		return -1 * t3 + 3 * t2 + -3 * t + 1;
-	};
-
-	static _bezPn2 = (t: number) => {
-		const t3 = t ** 3;
-		const t2 = t ** 2;
-		return 3 * t3 + -6 * t2 + 3 * t + 0;
-	};
-
-	static _bezPn3 = (t: number) => {
-		const t3 = t ** 3;
-		const t2 = t ** 2;
-		return -3 * t3 + 3 * t2 + 0 * t + 0;
-	};
-
-	static _bezPn4 = (t: number) => {
-		const t3 = t ** 3;
-		return t3;
-	};
-
-	static _derivitivePn1 = (t: number) => {
-		const t2 = t ** 2;
-		return -3 * t2 + 6 * t - 3;
-	};
-
-	static _derivitivePn2 = (t: number) => {
-		const t2 = t ** 2;
-		return 9 * t2 + -12 * t + 3;
-	};
-
-	static _derivitivePn3 = (t: number) => {
-		const t2 = t ** 2;
-		return -9 * t2 + 6 * t + 0;
-	};
-
-	static _derivitivePn4 = (t: number) => {
-		const t2 = t ** 2;
-		return 3 * t2 + 0 * t + 0;
-	};
-
-	static #accCoef1(t: number) {
-		return -6 * t + 6;
-	}
-
-	static #accCoef2(t: number) {
-		return 18 * t - 12;
-	}
-
-	static #accCoef3(t: number) {
-		return -18 * t + 6;
-	}
-
-	static #accCoef4(t: number) {
-		return 6 * t;
 	}
 
 	static distance(a: Vec, b: Vec) {
@@ -185,6 +111,19 @@ export class Vec extends pointConstructor implements Point, Array<number> {
 	mul(inp: Vp | number) {
 		if (typeof inp === 'number') return new Vec(this.x * inp, this.y * inp);
 		return new Vec(this.x * inp[0], this.y * inp[1]);
+	}
+
+	transformMatrix(mat: Matrix) {
+		if (mat.numCols !== 2 || mat.numRows > 2 || mat.numRows === 1) {
+			throw new Error(`matrix misssized`);
+		}
+
+		const is3 = mat.numRows === 3;
+		const vecMatForm = is3
+			? new Matrix([[this.x], [this.y], [1]])
+			: new Matrix([[this.x], [this.y]]);
+		const result = mat.mul(vecMatForm);
+		return new Vec(result[0][0], result[0][1]);
 	}
 
 	div(no: number): Vec;

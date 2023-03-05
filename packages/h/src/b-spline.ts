@@ -13,7 +13,7 @@ function mod(diviend: number, divisor: number) {
 function binarySearch(nums: number[], target: number): number {
 	let left = 0;
 	let right: number = nums.length - 1;
-
+	if (nums[left] === target) return 0;
 	while (left <= right) {
 		const mid: number = Math.floor((left + right) / 2);
 
@@ -39,6 +39,7 @@ class BasisSpline {
 	public degree: number;
 	public useLUT: boolean;
 	public lut?: number[];
+	public totalLength?: number;
 	public interpolateLut?: (t: number) => number;
 	public depth: number;
 	constructor(
@@ -46,7 +47,8 @@ class BasisSpline {
 		degree: number,
 		type: SplineType,
 		useLUT = false,
-		depth = 2,
+		depth = 0,
+
 		knots?: number[],
 	) {
 		this.type = type;
@@ -71,36 +73,43 @@ class BasisSpline {
 
 		if (this.useLUT) {
 			this.lut = [] as number[];
+			const distances: number[] = [];
 			let dist = 0;
-			const maxValue = this.depth - 1;
-			this.lut[0] = 0;
-			this.lut[maxValue] = 1;
 			let previous = bsplineMat(this, 0);
 			for (let i = 1; i < this.depth; i++) {
-				const t = i / maxValue;
+				const t = i / (this.depth - 1);
 				const next = bsplineMat(this, t);
 				const sum = dist + next.sub(previous).len();
-				this.lut[i] = sum;
+				distances[i] = sum;
 				dist = sum;
 				previous = next;
 			}
 
-			const max = this.lut[this.depth - 1];
-			this.lut = this.lut.map(dist => dist / max);
+			const max = distances[this.depth - 1];
+			this.totalLength = max;
+			this.lut = distances.map(dist => dist / max);
 			this.lut[0] = 0;
 			this.lut[this.depth - 1] = 1;
 			const newLut = [] as number[];
 			newLut[0] = 0;
+			const maxValue = this.depth - 1;
 			for (let i = 1; i < this.depth; i++) {
-				const t = i / maxValue;
-				let u = binarySearch(this.lut, t);
-				if (u === -1) u = maxValue;
-				const ia = u / maxValue;
-				const ib = (u + 1) / maxValue;
-				const oa = this.lut[u];
-				const ob = this.lut[u + 1];
-				const offset = (t - ia) * (ib - ia);
-				const output = ia + (ib - ia) * ((t - oa) / (ob - oa));
+				const input = i / (this.depth - 1);
+				let u = binarySearch(this.lut, input);
+				if (u === -1) {
+					u = this.depth - 1;
+					newLut[i] = 1;
+					continue;
+				}
+
+				const inputLower = u / maxValue;
+				const inputUpper = (u + 1) / maxValue;
+				const outputLower = this.lut[u];
+				const outputUpper = this.lut[u + 1];
+				const output =
+					((input - inputLower) / (inputUpper - inputLower)) *
+						(outputUpper - outputLower) +
+					outputLower;
 				newLut[i] = output;
 			}
 
@@ -109,6 +118,7 @@ class BasisSpline {
 
 			this.interpolateLut = (t: number) => {
 				const lut = this.lut;
+				if (t === 1) return 1;
 				const u = t * (this.depth - 1);
 				const a = Math.floor(u);
 				const b = a + 1;

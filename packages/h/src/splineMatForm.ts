@@ -14,8 +14,9 @@ Object.keys(matrices).forEach(k => {
 });
 
 export function bsplineMat(spline: BSpline, t: number) {
+	if (t >= 1) t = 1;
 	const u = t * (spline.knots.length - spline.degree);
-	const knotIndex = Math.floor(u);
+	const knotIndex = t === 1 ? u - 1 : Math.floor(u);
 	const x = u - knotIndex;
 	const sourcePoints = range(spline.degree + 1).map(d => {
 		return spline.controlPoints[spline.knots[knotIndex + d]];

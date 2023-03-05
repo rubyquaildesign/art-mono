@@ -32,7 +32,7 @@ export class Line {
 	}
 
 	get vector() {
-		return this.end.clone().sub(this.start);
+		return this.end.sub(this.start);
 	}
 
 	get length() {
@@ -147,5 +147,23 @@ export class Line {
 			(this.start.isEqualTo(other.end) && this.end.isEqualTo(other.start)) ||
 			(this.start.isEqualTo(other.start) && this.end.isEqualTo(other.end))
 		);
+	}
+
+	clone() {
+		return new Line(this.start, this.end);
+	}
+
+	offsetStart(offset: number) {
+		const t = this.vector.setLength(offset);
+		return this.updateStart(this.start.add(t));
+	}
+
+	offsetEnd(offset: number) {
+		const t = this.start.sub(this.end).setLength(offset);
+		return this.updateEnd(this.end.add(t));
+	}
+
+	offsetBoth(offset: number) {
+		return this.offsetStart(offset).offsetEnd(offset);
 	}
 }

@@ -1,0 +1,32 @@
+{
+	"name": "blood-art",
+	"version": "0.0.0",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"launch": "fish -c 'launchchrome 3000'"
+	},
+	"devDependencies": {
+		"@types/d3": "^*",
+		"@types/dat.gui": "^0.7.7",
+		"@types/prettier": "^*",
+		"@types/xo": "^*",
+		"prettier": "^2.5.1",
+		"rubys-xo-settings": "git://github.com/rubyquaildesign/rubys-xo-settings",
+		"typescript": "^*",
+		"vite": "^*",
+		"xo": "^*"
+	},
+	"dependencies": {
+		"@rupertofly/capture-client": "^*",
+		"@rupertofly/h": "*",
+		"box2d-wasm": "npm:liquidfun-wasm@6.0.4-lf.1",
+		"case": "^1.6.3",
+		"colours": "*",
+		"d3": "^*",
+		"dat.gui": "^0.7.9",
+		"open-simplex-noise": "^*",
+		"regl": "^*"
+	}
+}

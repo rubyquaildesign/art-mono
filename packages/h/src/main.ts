@@ -14,3 +14,4 @@ export * from './xy-point-helpers';
 export * from './b-spline';
 export * from './splineMatForm';
 export * from './simple-hilbert';
+export * from './matrices';

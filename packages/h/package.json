@@ -31,8 +31,8 @@
 	"devDependencies": {
 		"@rupertofly/capture-client": "^1.2.2",
 		"@types/b-spline": "^2.0.1",
-		"@types/d3": "^7.4.0",
-		"@types/d3-array": "^2.12.3",
+		"@types/d3": "*",
+		"@types/d3-array": "*",
 		"@types/d3-delaunay": "^5.3.1",
 		"@types/d3-path": "^1.0.9",
 		"@types/d3-polygon": "^2.0.1",
@@ -43,7 +43,7 @@
 		"@types/rbush": "^3.0.0",
 		"@types/tape": "^4.13.2",
 		"@typescript/analyze-trace": "^0.9.1",
-		"d3": "^7.7.0",
+		"d3": "^7.8.0",
 		"d3-delaunay": "^6.0.2",
 		"fractal-noise": "^1.2.0",
 		"iterare": "^1.2.1",
@@ -66,13 +66,13 @@
 	},
 	"dependencies": {
 		"b-spline": "^2.0.2",
-		"d3-array": "^2.12.1",
-		"d3-path": "^1.0.9",
+		"d3-array": "*",
+		"d3-path": "*",
 		"d3-polygon": "^2.0.0",
 		"mathjs": "^11.5.0",
 		"rubys-xo-settings": "github:rubyquaildesign/rubys-xo-settings",
 		"tinyqueue": "^2.0.3",
 		"tslib": "^1.14.1",
-		"zod": "3.19"
+		"zod": "~3.19.1"
 	}
 }

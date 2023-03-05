@@ -1,0 +1,28 @@
+{
+	"name": "{{cookiecutter.pack_name}}",
+	"version": "0.0.0",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"launch": "fish -c 'launchchrome 3000'"
+	},
+	"devDependencies": {
+		"typescript": "^*",
+		"vite": "^*",
+		"@types/d3": "^*",
+		"@types/prettier": "^*",
+		"@types/xo": "^*",
+		"prettier": "^2.5.1",
+		"xo": "^*",
+		"rubys-xo-settings": "git://github.com/rubyquaildesign/rubys-xo-settings"
+	},
+	"dependencies": {
+		"@rupertofly/capture-client": "^*",
+		"@rupertofly/h": "*",
+		"d3": "^*",
+		"regl": "^*",
+		"open-simplex-noise": "^*",
+		"colours": "*"
+	}
+}

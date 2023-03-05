@@ -1,341 +1,487 @@
-import { List, Map as IMap, Record, Set as ISet, Stack } from 'immutable';
-import { Cell, Tile, WfcSpace } from './types';
+/**
+ * @desc This is the main file for solving the Wave Function
+ */
 
-const getEntropy = (count: number) => -(Math.log(1 / count) / Math.log(2));
-enum DebugValue {
-  COLLAPSE = 'collapsed',
-  CHANGED = 'changed',
-  NO_CHANGE = 'noChange',
-  SOURCE_CELL = 'sourceCell',
-  CHECKED_CELL = 'checkedCell',
-  CONFLICT = 'conflict',
-  DEFAULT = '',
-}
-export type Debug = typeof DebugValue;
-function getRandomArrayEntry<T>(array: T[]) {
-  if (array.length === 0) throw new Error(`passed empty array`);
-  const arrayLength = array.length;
-  const choice = Math.floor(Math.random() * arrayLength);
-  return array[choice];
-}
-// Select a random tile from all possible cells
+import {
+	castDraft,
+	castImmutable,
+	Draft,
+	enableMapSet,
+	nothing,
+	produce,
+	enablePatches,
+	Patch,
+} from 'immer';
+import iter from 'iterare';
+import { WfcSpace } from './immer-types';
+import { intersection, isSuperset, difference, union } from './set-helpers';
 
+enableMapSet();
+enablePatches();
 type Keyable = string | number | symbol;
 
+/**
+ * Gets entropy for a *Count* amount of elements
+ * @param count amound of elements
+ * @returns  {number} entropy
+ */
+function getEntropy(probobilities: Iterable<number>) {
+	let sum = 0;
+	for (const x of probobilities) {
+		sum += x * Math.log2(x);
+	}
+
+	return -1 * sum;
+}
+
+function getRandomArrayEntry<T>(array: T[], rnd: () => number) {
+	if (array.length === 0) throw new Error(`passed empty array`);
+	const arrayLength = array.length;
+	const choice = Math.floor(rnd() * arrayLength);
+	return array[choice];
+}
+
+/**
+ * Debug value
+ * @enum
+ */
+enum DebugValue {
+	collapse = 'collapsed', // A Cell that has collapsed through a random
+	changed = 'changed', // A Cell that has had it's available tiles changed
+	noChange = 'noChange', // A Cell that has had no change to it's available tiles
+	sourceCell = 'sourceCell',
+	checkedCell = 'checkedCell',
+	conflict = 'conflict',
+	default = '',
+}
+export type Debug = typeof DebugValue;
+
+// Select a random tile from all possible cells
+
+/**
+ * Wave function collapse class
+ * @template SlotType The Type of the slots
+ * @template SocketType The Typing of the sockets
+ * @template CellId The typing for the cell ids
+ * @template TileId The typing for the tile ids
+ * @template T used for generics
+ */
+
+type Wfc<T> = T extends WaveFunctionCollapse<
+	infer Sk,
+	infer Sl,
+	infer Tl,
+	infer C
+>
+	? WfcSpace<Sk, Sl, Tl, C>
+	: never;
+
 export class WaveFunctionCollapse<
-  SlotType,
-  SocketType,
-  CellId,
-  TileId,
-  T extends WfcSpace<SlotType, SocketType, TileId, CellId> = WfcSpace<
-    SlotType,
-    SocketType,
-    TileId,
-    CellId
-  >,
+	SocketType extends Keyable,
+	SlotType extends Keyable,
+	TileId,
+	CellId,
+	WFC extends WfcSpace<SocketType, SlotType, TileId, CellId> = WfcSpace<
+		SocketType,
+		SlotType,
+		TileId,
+		CellId
+	>,
 > {
-  declare wfc: WfcSpace<SlotType, SocketType, TileId, CellId>;
-  field: T['Field'] = IMap<CellId, T['Cell']>();
-  wave: T['Field'] = this.field;
-  stack: Stack<CellId> = Stack();
-  entropy: IMap<CellId, number> = IMap();
-  isDebug = false;
-  debug?: IMap<CellId, DebugValue> = IMap();
-  history: T['History'] = List();
-  tiles: IMap<TileId, T['Tile']> = IMap();
-  triedTiles: ISet<TileId> = ISet();
-  updateEntryFactory: T['UpdateEntryFactory'] = Record(
-    {
-      entropy: IMap(),
-      field: IMap(),
-      newTiles: ISet(),
-      sourceCell: undefined as any,
-      stack: Stack(),
-      updatedCell: undefined as any,
-    },
-    'update',
-  );
+	declare wfc: WfcSpace<SocketType, SlotType, TileId, CellId>;
 
-  collapseEntryFactory: T['CollapseEntryFactory'] = Record(
-    {
-      entropy: IMap(),
-      field: IMap(),
-      collapsedCell: undefined as any,
-      toTile: undefined as any,
-      stack: Stack(),
-      usedTiles: ISet(),
-    },
-    'collapse',
-  );
+	field: ReadonlyMap<CellId, WFC['cell']> = new Map();
+	wave = this.field;
+	entropy: ReadonlyMap<CellId, number> = new Map();
+	pendingCells: CellId[] = [];
 
-  private updateCellToTiles(
-    cell: CellId,
-    sourceCell: CellId,
-    newTiles: ISet<TileId>,
-  ) {
-    this.entropy = this.entropy.update(cell, (_) =>
-      newTiles.size === 1 ? 1 : newTiles.size - Math.random() * 0.01,
-    );
-    this.wave = this.wave.update(cell, (c) => {
-      let newCell = c!;
-      newCell = newCell.set('tileMap', newTiles);
-      if (newTiles.size === 1) newCell = newCell.set('collapsed', true);
-      return newCell;
-    });
-    this.stack = this.stack.unshift(cell);
-    this.history = this.history.push(
-      this.updateEntryFactory({
-        entropy: this.entropy,
-        field: this.wave,
-        newTiles,
-        sourceCell,
-        stack: this.stack,
-        updatedCell: cell,
-      }),
-    );
-    if (this.isDebug) {
-      this.debug = this.debug!.set(cell, DebugValue.CHANGED);
-    }
-    return this.wave.get(cell)!.collapsed;
-  }
+	tiles: ReadonlyMap<TileId, WFC['tile']> = new Map();
+	boundarySocket?: SocketType;
 
-  private collapseCell(cell: CellId, usedTiles: ISet<TileId> = ISet([])) {
-    // Check Boundaries
-    const boundaries = this.adjacentCells!(cell)
-      .filter((v) => v === 'boundary')
-      .map((v) => this.boundarySocket!);
-    const nonBounded = this.tiles
-      .filter((tile) =>
-        tile.plugs.every((options, slt) => {
-          if (!boundaries.has(slt)) return true;
-          if (options.includes(boundaries.get(slt)!)) return true;
-          return false;
-        }),
-      )
-      .keySeq()
-      .toSet();
-    const availableTiles = this.wave.get(cell)!.tileMap;
-    const options = availableTiles.intersect(nonBounded).subtract(usedTiles);
-    let choice: TileId;
-    if (options.size === 0) return false;
-    if (options.size === 1) {
-      choice = options.first();
-    } else if (this.tileWeighting) {
-      const weighted = options
-        .toOrderedMap()
-        .map((tile) => this.tileWeighting!.get(tile, 1))
-        .toArray();
-      let total = 0;
-      for (const entry of weighted) total += entry[1];
-      const threshold = Math.random() * total;
-      total = 0;
-      for (const entry of weighted) {
-        total += entry[1];
-        if (total >= threshold) {
-          choice = entry[0];
-          break;
-        }
-      }
-    } else {
-      choice = getRandomArrayEntry(options.toArray());
-    }
-    this.wave = this.wave.update(cell, (c) =>
-      c!.set('tileMap', ISet([choice])).set('collapsed', true),
-    );
-    this.entropy = this.entropy.set(cell, 1);
-    if (this.isDebug) {
-      this.debug = this.debug!.set(cell, DebugValue.COLLAPSE);
-    }
-    this.stack = this.stack.unshift(cell);
-    this.history = this.history.push(
-      this.collapseEntryFactory({
-        collapsedCell: cell,
-        entropy: this.entropy,
-        field: this.wave,
-        stack: this.stack,
-        toTile: choice!,
-        usedTiles: usedTiles.add(choice!),
-      }),
-    );
-    return true;
-  }
+	possibilityMap?: Map<TileId, Map<SlotType, Set<TileId>>>;
 
-  rollback() {
-    const lastValue = this.history.findLastIndex(
-      (v) => (v as T['CollapseEntry']).collapsedCell !== undefined,
-    );
-    console.log('rolling back to', lastValue);
-    if (lastValue === -1)
-      throw new Error(`well shit, this can't be rolled back`);
-    const lastCollapse = this.history.get(lastValue) as T['CollapseEntry'];
-    this.triedTiles = lastCollapse.usedTiles;
-    if (lastValue === 0) {
-      this.history = this.history.clear();
-      this.wave = this.field;
-      this.entropy = this.field.map(() => this.tiles.size + Math.random() / 16);
-      this.stack = this.stack.clear();
-      return true;
-    }
-    this.history = this.history.slice(0, lastValue);
-    const now = this.history.last()!;
-    this.wave = now.field;
-    this.entropy = now.entropy;
-    this.stack = now.stack;
-    return true;
-  }
+	history: WFC['history'] = [];
+	patches: Patch[] = [];
+	triedTiles: ReadonlySet<TileId> = new Set();
+	random: () => number = Math.random;
 
-  boundarySocket?: SocketType;
-  tileWeighting?: IMap<TileId, number>;
-  matchingSlot?: (slot: SlotType) => SlotType;
-  adjacentCells?: (cellId: CellId) => IMap<SlotType, CellId | 'boundary'>;
+	isDebug = false;
+	debug?: ReadonlyMap<CellId, DebugValue> = new Map();
 
-  possibleAdjacentTiles(
-    slot: SlotType,
-    sockets: ISet<SocketType>,
-  ): ISet<TileId> {
-    if (this.matchingSlot === undefined)
-      throw new Error(`no matching slot argument`);
-    const matchingSlot = this.matchingSlot(slot);
-    return this.tiles
-      .filter((tile) => {
-        return sockets.includes(tile.sockets.get(matchingSlot)!);
-      })
-      .map((tile) => tile.id)
-      .toSet();
-  }
+	tileWeighting?: (tile: TileId, cell: CellId) => number;
+	matchingSlot?: (slot: SlotType) => SlotType;
+	adjacentCells?: (cellId: CellId) => Map<SlotType, CellId | 'boundary'>;
 
-  solveGenerator() {
-    // Check to make sure the functions exist;
-    type yieldType = [
-      wave: typeof this.wave,
-      entropy: typeof this.entropy,
-      debug: typeof this.debug,
-    ];
-    type That = this;
-    if (!this.matchingSlot) throw new Error('missing matching slot funciton');
-    if (!this.adjacentCells) throw new Error('missing adjacent cells function');
-    if (this.boundarySocket === undefined)
-      throw new Error(`no boundary socket set`);
-    // The generator
-    const gen = function* (this: That) {
-      //  Setup the entropy and wave variables
-      if (this.isDebug) this.debug = this.field.map((_) => DebugValue.DEFAULT);
-      const entropy = this.field.map(
-        () => this.tiles.size + Math.random() / 16,
-      );
-      this.entropy = entropy;
-      const wave = this.field;
-      this.wave = this.field;
+	private readonly _setDebugValue = produce<
+		typeof this.debug,
+		[CellId, DebugValue]
+	>((draft, id: CellId, debug: DebugValue) => {
+		draft!.set(castDraft(id), castDraft(debug));
+	});
 
-      let done = this.entropy.every((v) => v < 1);
-      const waveStack: Stack<CellId> = Stack();
-      this.stack = waveStack;
-      // Start going through the wave
-      while (!done) {
-        // Create a stack for the wave
+	gen = function* (
+		this: WaveFunctionCollapse<SocketType, SlotType, TileId, CellId>,
+	) {
+		//  Setup the entropy and wave variables
+		this.setupPossibilityMap();
+		this.debug = new Map(
+			[...this.field].map(([id]) => [id, DebugValue.default]),
+		);
+		Object.freeze(this.debug);
+		this.entropy = new Map(
+			[...this.field].map(([id]) => [id, this.tiles.size + this.random() / 16]),
+		);
+		Object.freeze(this.entropy);
+		this.pendingCells = [];
 
-        // Clear debug
-        if (this.isDebug)
-          this.debug = this.field.map((_) => DebugValue.DEFAULT);
-        // Get smallest entropyCell
-        const startingId = this.entropy
-          .entrySeq()
-          .filter(([id, v]) => v !== 1)
-          .sortBy((v) => v[1])
-          .first()![0];
-        // Collapse cell with smallest entropy
+		for (const [id] of iter(this.field).filter(([id, v]) => v.collapsed)) {
+			this.pendingCells.push(id);
+		}
 
-        const canCollapse = this.collapseCell(startingId, this.triedTiles);
-        yield [this.wave, this.entropy, this.debug] as yieldType;
-        if (!canCollapse) {
-          this.rollback();
-          yield [this.wave, this.entropy, this.debug] as yieldType;
-          continue;
-        }
-        while (this.stack.size > 0) {
-          // Get top of stack
-          const currentCellId = this.stack.first<CellId>()!;
+		Object.freeze(this.field);
+		this.wave = produce(
+			this.field,
+			draft => {
+				const changedCells: CellId[] = [];
+				for (const [id, cell] of draft) {
+					const boundarySlots: Map<SlotType, SocketType> = new Map();
+					for (const [slot, sock] of this.adjacentCells!(id as CellId)) {
+						if (sock !== 'boundary') continue;
+						boundarySlots.set(slot, this.boundarySocket!);
+					}
 
-          this.stack = this.stack.shift();
-          if (this.isDebug) {
-            this.debug = this.debug!.set(currentCellId, DebugValue.SOURCE_CELL);
-            yield [this.wave, this.entropy, this.debug] as yieldType;
-          }
-          const neighbours = this.adjacentCells!(currentCellId);
-          for (const [slot, slotResident] of neighbours) {
-            if (slotResident === 'boundary') continue;
-            const neighbouringCell = this.wave.get(slotResident)!;
-            const collapsed = neighbouringCell.collapsed;
-            if (collapsed) continue;
-            if (this.isDebug) {
-              this.debug = this.debug!.set(
-                slotResident,
-                DebugValue.CHECKED_CELL,
-              );
-              yield [this.wave, this.entropy, this.debug] as yieldType;
-            }
-            const thisCell = this.wave.get(currentCellId)!;
-            const plugs = thisCell.tileMap
-              .map((k) => this.tiles.get(k)!)
-              .flatMap((tile) => tile.plugs.get(slot)!)
-              .toSet();
-            let possibleTiles = this.possibleAdjacentTiles(slot, plugs);
-            const available: ISet<TileId> = neighbouringCell.tileMap;
-            // Boundaries
-            const availables = available;
-            const adjs = this.adjacentCells!(slotResident);
-            if (adjs.includes('boundary')) {
-              const bdSlots = adjs
-                .filter((v) => v === 'boundary')
-                .keySeq()
-                .toSet();
-              const canDo = possibleTiles.filter((t) => {
-                const tile = this.tiles.get(t)!;
-                for (const slt of bdSlots) {
-                  if (tile.sockets.get(slt) !== this.boundarySocket!)
-                    return false;
-                }
-                return true;
-              });
-              possibleTiles = possibleTiles.intersect(canDo);
-            }
-            if (available.isSubset(possibleTiles)) {
-              if (this.isDebug) {
-                this.debug = this.debug!.set(
-                  slotResident,
-                  DebugValue.NO_CHANGE,
-                );
-                yield [this.wave, this.entropy, this.debug] as yieldType;
-              }
-              continue;
-            }
-            const intersection = possibleTiles.intersect(available);
+					if (boundarySlots.size === 0) continue;
+					let hasChanged = false;
+					for (const tile of cell.tileMap) {
+						const tileObject = this.tiles.get(tile as TileId)!;
+						const canBePlaced = iter(boundarySlots).every(([slt, sk]) =>
+							tileObject.plugs[slt].has(sk),
+						);
+						if (!canBePlaced) {
+							cell.tileMap.delete(tile);
+							hasChanged = true;
+							changedCells.push(id as CellId);
+						}
+					}
+				}
 
-            if (intersection.size === 0) {
-              this.rollback();
-              yield [this.wave, this.entropy, this.debug] as yieldType;
-              break;
-            }
+				this.pendingCells.push(...changedCells);
+			},
+			patches => {
+				this.patches = [...this.patches, ...patches];
+			},
+		);
 
-            const collapsedATile = this.updateCellToTiles(
-              slotResident,
-              currentCellId,
-              intersection,
-            );
-            if (this.isDebug) {
-              this.debug = this.debug!.set(slotResident, DebugValue.CHANGED);
-              yield [this.wave, this.entropy, this.debug] as yieldType;
-            }
-          }
-          if (this.isDebug) {
-            this.debug = this.debug!.set(currentCellId, DebugValue.DEFAULT);
-          }
-        }
+		let isCollapseDone = iter(this.wave).every(([id, v]) => v.collapsed);
 
-        done = this.wave.every((v) => v.collapsed);
-      }
-      return [this.wave, this.entropy, this.debug] as yieldType;
-    };
-    return gen.call(this);
-  }
+		// Start going through the wave
+		while (!isCollapseDone) {
+			// Create a stack for the wave
+			if (this.pendingCells.length === 0) {
+				// Clear debug
+				if (this.isDebug)
+					this.debug = new Map(
+						[...this.field].map(([id]) => [id, DebugValue.default]),
+					);
+
+				// Get smallest entropyCell
+				const startingId = this.getCellwithLeastEntropy();
+
+				// Collapse cell with smallest entropy
+				const canCollapse = this.collapseCell(startingId, this.triedTiles);
+				yield [this.wave, this.entropy, this.debug];
+				if (!canCollapse) {
+					this.rollback();
+					yield [this.wave, this.entropy, this.debug];
+					continue;
+				}
+			}
+
+			stackLoop: while (this.pendingCells.length > 0) {
+				// Get top of stack
+				const currentCellId = this.pendingCells.shift()!;
+
+				const currentCell = this.wave.get(currentCellId)!;
+				if (this.isDebug) {
+					this.setDebugValue(currentCellId, DebugValue.sourceCell);
+					yield [this.wave, this.entropy, this.debug];
+				}
+
+				const neighbours = this.adjacentCells!(currentCellId);
+				const possibleTiles = iter(currentCell.slots)
+					.map(slot => {
+						let tiles: Set<TileId> = new Set();
+						for (const tId of currentCell.tileMap) {
+							const tileOptions = this.possibilityMap!.get(tId);
+							if (!tileOptions) throw new Error(`can't find tile ${tId}`);
+							const options = tileOptions.get(slot);
+							if (!options)
+								throw new Error(
+									`can't find options for tile ${tId} at slot ${String(slot)}`,
+								);
+							tiles = union(tiles, options);
+						}
+
+						return [slot, tiles] as [SlotType, Set<TileId>];
+					})
+					.toMap();
+				for (const [slot, slotResident] of neighbours) {
+					if (slotResident === 'boundary') continue;
+					const neighbouringCell = this.wave.get(slotResident);
+					const possibilities = possibleTiles.get(slot)!;
+					if (neighbouringCell === undefined)
+						throw new Error(`no cell at ${slotResident}`);
+					if (neighbouringCell.collapsed) continue;
+					this.debug = produce(this.debug, draft => {
+						draft.set(castDraft(slotResident), DebugValue.checkedCell);
+					});
+					if (this.isDebug) {
+						yield [this.wave, this.entropy, this.debug];
+					}
+
+					const available = neighbouringCell.tileMap;
+					// Boundaries
+
+					const noChange = isSuperset(possibilities, available);
+					if (noChange && this.isDebug) {
+						this.setDebugValue(slotResident, DebugValue.noChange);
+						yield [this.wave, this.entropy, this.debug];
+					}
+
+					if (noChange) continue;
+
+					const intersectTiles = intersection(possibilities, available);
+
+					if (intersectTiles.size === 0 || available.size === 0) {
+						console.log(`contradiction found at ${slotResident},rolling back`);
+						this.rollback();
+						yield [this.wave, this.entropy, this.debug];
+						break stackLoop;
+					}
+
+					const collapsedAtile = this.updateCellToTiles(
+						slotResident,
+						currentCellId,
+						intersectTiles,
+					);
+					if (this.isDebug || collapsedAtile) {
+						this.setDebugValue(slotResident, DebugValue.changed);
+						yield [this.wave, this.entropy, this.debug];
+					}
+				}
+
+				this.setDebugValue(currentCellId, DebugValue.default);
+			}
+
+			isCollapseDone = iter(this.wave.values()).every(
+				({ collapsed }) => collapsed,
+			);
+		}
+
+		return [this.wave, this.entropy, this.debug];
+	};
+
+	getCellwithLeastEntropy(): CellId {
+		const firstEntry = iter(this.entropy)
+			.filter(([id, v]) => v !== 1)
+			.toArray()
+			.sort((a, b) => a[1] - b[1])[0];
+		if (firstEntry === undefined) throw new Error(`can't get smallest cell`);
+		return firstEntry[0];
+	}
+
+	rollback() {
+		// Get last value
+		console.log(this.history);
+
+		let lastValue = -1;
+		for (let i = this.history.length - 1; i >= 0; i--) {
+			const entry = this.history[i];
+			if ((entry as Wfc<this>['collapseEntry']).collapsedCell !== undefined) {
+				lastValue = i;
+				break;
+			}
+		}
+
+		// Get the last history entry where a cell was collapsed to a random entry
+
+		console.log('rolling back to', lastValue);
+
+		// Throw an error if there's nothing to rollback to
+		if (lastValue === -1)
+			throw new Error(`well shit, this can't be rolled back`);
+
+		const lastCollapse = this.history[lastValue] as Wfc<this>['collapseEntry'];
+		this.triedTiles = lastCollapse.usedTiles;
+		if (lastValue === 0) {
+			this.history = [];
+			this.wave = this.field;
+			this.entropy = new Map(
+				[...this.field].map(([id]) => [
+					id,
+					this.tiles.size + this.random() / 16,
+				]),
+			);
+			this.pendingCells = [];
+			return true;
+		}
+
+		this.history = this.history.slice(0, lastValue);
+		const now = this.history[this.history.length - 1];
+		this.wave = now.field;
+		this.entropy = now.entropy;
+		this.pendingCells = [];
+		return true;
+	}
+
+	setupPossibilityMap() {
+		if (!this.matchingSlot) throw new Error('no matching slot');
+		this.possibilityMap = new Map();
+		for (const [currentTileId, currentTile] of this.tiles) {
+			const tMap = new Map<SlotType, Set<TileId>>();
+			for (let [slot, sockets] of Object.entries(currentTile.plugs) as Array<
+				[string | number, Set<SocketType>]
+			>) {
+				if (
+					typeof [...iter(this.field).take(1).toArray()[0][1].slots][0] ===
+					'number'
+				)
+					slot = Number.parseInt(slot as string, 10);
+				const inverseSlot = this.matchingSlot(slot as SlotType);
+				const tileSet = new Set<TileId>();
+				for (const [matchingId, matchingTile] of this.tiles) {
+					const sock = matchingTile.sockets[inverseSlot];
+					if (sockets.has(sock)) {
+						tileSet.add(matchingId);
+					}
+				}
+
+				tMap.set(slot as SlotType, tileSet);
+			}
+
+			this.possibilityMap.set(currentTileId, tMap);
+		}
+	}
+
+	private updateCellToTiles(
+		cell: CellId,
+		sourceCell: CellId,
+		newTiles: ReadonlySet<TileId>,
+	) {
+		this.entropy = produce(this.entropy, draft => {
+			const nt = newTiles.size;
+			const newEntropy = nt === 1 ? 1 : nt - this.random() * 0.01;
+			draft.set(castDraft(cell), newEntropy);
+		});
+		this.wave = produce(
+			this.wave,
+			draft => {
+				const c = draft.get(castDraft(cell));
+				if (c === undefined) throw new Error(`cell isn't in wave`);
+				for (const tm of c.tileMap) {
+					if (!newTiles.has(tm as TileId)) c.tileMap.delete(tm);
+				}
+
+				c.collapsed = c.tileMap.size === 1;
+				c.observed = false;
+			},
+			(patches, iPatches) => {
+				this.patches = [...this.patches, ...patches];
+			},
+		);
+
+		this.pendingCells.push(cell);
+
+		this.history = produce(this.history, draft => {
+			const element: WFC['updateEntry'] = {
+				entropy: this.entropy,
+				field: this.wave,
+				newTiles,
+				sourceCell,
+				updatedCell: cell,
+				stack: [...this.pendingCells],
+			};
+			draft.push(castDraft(element));
+		});
+		this.debug = produce(this.debug, draft => {
+			if (!draft) return nothing;
+			draft.set(castDraft(cell), DebugValue.changed);
+		});
+
+		return this.wave.get(cell)!.collapsed;
+	}
+
+	private collapseCell(
+		cell: CellId,
+		usedTiles: ReadonlySet<TileId> = new Set([]),
+	) {
+		// Check Boundaries
+		const cellObject = this.wave.get(cell)!;
+
+		const availableTiles = cellObject.tileMap;
+		const options = difference(availableTiles, usedTiles);
+		let choice: TileId;
+		if (options.size === 0) return false;
+		if (options.size === 1) {
+			choice = iter(options).toArray()[0];
+		} else if (this.tileWeighting) {
+			const weighted = new Map(
+				[...options].map(tile => [tile, this.tileWeighting!(tile, cell)]),
+			);
+			let total = 0;
+			for (const entry of weighted) total += entry[1];
+			const threshold = this.random() * total;
+			total = 0;
+			for (const entry of weighted) {
+				total += entry[1];
+				if (total >= threshold) {
+					choice = entry[0];
+					break;
+				}
+			}
+		} else {
+			choice = getRandomArrayEntry([...options], () => this.random());
+		}
+
+		this.wave = produce(
+			this.wave,
+			draft => {
+				const c = draft.get(castDraft(cell))!;
+				c.tileMap.clear();
+				c.tileMap.add(castDraft(choice));
+				c.collapsed = true;
+				c.observed = true;
+			},
+			patches => {
+				this.patches = [...this.patches, ...patches];
+			},
+		);
+
+		this.entropy = produce(this.entropy, draft => {
+			draft.set(castDraft(cell), 1);
+		});
+		this.debug = produce(this.debug, draft => {
+			draft?.set(castDraft(cell), DebugValue.collapse);
+		});
+
+		this.pendingCells.push(cell);
+		this.history = produce(this.history, draft => {
+			const uds = new Set(usedTiles);
+			uds.add(choice);
+			const element: WFC['collapseEntry'] = {
+				entropy: this.entropy,
+				field: this.wave,
+				stack: [...this.pendingCells],
+				collapsedCell: cell,
+				toTile: choice,
+				usedTiles: uds,
+			};
+			draft.push(castDraft(element));
+		});
+		return true;
+	}
+
+	private setDebugValue(id: CellId, debug: DebugValue) {
+		this.debug = this._setDebugValue(this.debug, id, debug);
+	}
 }
