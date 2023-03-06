@@ -18,171 +18,6 @@ importers:
       typescript: 4.9.4
       xo: 0.47.0
 
-  packages/2023-genuary-2:
-    specifiers:
-      '@rupertofly/capture-client': ^1
-      '@rupertofly/h': '*'
-      '@types/d3': ^7.4.0
-      '@types/prettier': ^2
-      '@types/xo': ^0
-      colours: '*'
-      d3: ^7
-      open-simplex-noise: ^2
-      prettier: ^2.5.1
-      rubys-xo-settings: git://github.com/rubyquaildesign/rubys-xo-settings
-      typescript: ^4.4.4
-      vite: ^3
-      xo: ^0
-    dependencies:
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      colours: link:../colours
-      d3: 7.8.0
-      open-simplex-noise: 2.5.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.53.1
-      typescript: 4.9.4
-      vite: 3.2.5
-      xo: 0.53.1
-
-  packages/2023-genuary-3:
-    specifiers:
-      '@rupertofly/capture-client': ^1
-      '@rupertofly/h': '*'
-      '@types/d3': ^7.4.0
-      '@types/prettier': ^2
-      '@types/xo': ^0
-      colours: '*'
-      d3: ^7
-      open-simplex-noise: ^2
-      prettier: ^2.5.1
-      regl: ^2.1.0
-      rubys-xo-settings: git://github.com/rubyquaildesign/rubys-xo-settings
-      typescript: ^4.4.4
-      vite: '4'
-      xo: ^0
-    dependencies:
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      colours: link:../colours
-      d3: 7.8.0
-      open-simplex-noise: 2.5.0
-      regl: 2.1.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.53.1
-      typescript: 4.9.4
-      vite: 4.0.3
-      xo: 0.53.1
-
-  packages/2023-genuary-4-intersection:
-    specifiers:
-      '@rupertofly/capture-client': ^1
-      '@rupertofly/h': '*'
-      '@types/d3': ^7.4.0
-      '@types/prettier': ^2
-      '@types/xo': ^0
-      colours: '*'
-      d3: ^7
-      open-simplex-noise: ^2
-      prettier: ^2.5.1
-      rubys-xo-settings: git://github.com/rubyquaildesign/rubys-xo-settings
-      typescript: ^4.4.4
-      vite: ^3
-      xo: ^0
-    dependencies:
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      colours: link:../colours
-      d3: 7.8.0
-      open-simplex-noise: 2.5.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.53.1
-      typescript: 4.9.4
-      vite: 3.2.5
-      xo: 0.53.1
-
-  packages/2023-genuary-5-debug:
-    specifiers:
-      '@rupertofly/capture-client': ^1
-      '@rupertofly/h': '*'
-      '@rupertofly/pg-clip': workspace:^1.0.0
-      '@types/d3': ^7.4.0
-      '@types/prettier': ^2
-      '@types/xo': ^0
-      colours: '*'
-      d3: ^7
-      open-simplex-noise: ^2
-      prettier: ^2.5.1
-      rubys-xo-settings: git://github.com/rubyquaildesign/rubys-xo-settings
-      typescript: ^4.4.4
-      vite: ^3
-      xo: ^0
-    dependencies:
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      '@rupertofly/pg-clip': link:../pg-clip
-      colours: link:../colours
-      d3: 7.8.0
-      open-simplex-noise: 2.5.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.53.1
-      typescript: 4.9.4
-      vite: 3.2.5
-      xo: 0.53.1
-
-  packages/bezier-test:
-    specifiers:
-      '@alenaksu/json-viewer': ^1.0.1
-      '@rupertofly/capture-client': ^1.2.2
-      '@rupertofly/h': '*'
-      '@types/d3': ^7.4.0
-      '@types/prettier': ^2.7.0
-      '@types/xo': ^0.39.3
-      colours: '*'
-      d3: ^7.6.1
-      d3-delaunay: ^6.0.2
-      iterare: ^1.2.1
-      open-simplex-noise: ^2.5.0
-      prettier: ^2.7.1
-      rubys-xo-settings: github:rubyquaildesign/rubys-xo-settings
-      typescript: ^4.7.4
-      vite: '3'
-      xo: ^0.47.0
-    dependencies:
-      '@alenaksu/json-viewer': 1.0.1
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      colours: link:../colours
-      d3: 7.8.0
-      d3-delaunay: 6.0.2
-      iterare: 1.2.1
-      open-simplex-noise: 2.5.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.47.0
-      typescript: 4.9.4
-      vite: 3.2.5
-      xo: 0.47.0
-
   packages/blood-art:
     specifiers:
       '@rupertofly/capture-client': ^*
@@ -224,39 +59,6 @@ importers:
       vite: 4.0.4
       xo: 0.53.1
 
-  packages/cards:
-    specifiers:
-      '@rupertofly/capture-client': ^1
-      '@rupertofly/h': '*'
-      '@types/d3': ^7.4.0
-      '@types/prettier': ^2
-      '@types/xo': ^0
-      colours: '*'
-      d3: ^7
-      iterare: ^1.2.1
-      open-simplex-noise: ^2
-      prettier: ^2.5.1
-      rubys-xo-settings: git://github.com/rubyquaildesign/rubys-xo-settings
-      typescript: ^4.9.3
-      vite: ^3
-      xo: ^0
-    dependencies:
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      colours: link:../colours
-      d3: 7.8.0
-      iterare: 1.2.1
-      open-simplex-noise: 2.5.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.53.1
-      typescript: 4.9.4
-      vite: 3.2.5
-      xo: 0.53.1
-
   packages/colours:
     specifiers: {}
 
@@ -285,41 +87,6 @@ importers:
     devDependencies:
       '@types/d3': 7.4.0
       '@types/kdbush': 3.0.2
-
-  packages/genuary-1-loop:
-    specifiers:
-      '@rupertofly/capture-client': ^1
-      '@rupertofly/h': '*'
-      '@types/d3': ^7.4.0
-      '@types/prettier': ^2
-      '@types/xo': ^0
-      colours: '*'
-      d3: ^7
-      d3-array: ^3.2.1
-      js-angusj-clipper: ^1.2.1
-      open-simplex-noise: ^2
-      prettier: ^2.5.1
-      rubys-xo-settings: git://github.com/rubyquaildesign/rubys-xo-settings
-      typescript: ^4.4.4
-      vite: ^3
-      xo: ^0
-    dependencies:
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      colours: link:../colours
-      d3: 7.8.0
-      d3-array: 3.2.1
-      js-angusj-clipper: 1.2.1
-      open-simplex-noise: 2.5.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.53.1
-      typescript: 4.9.4
-      vite: 3.2.5
-      xo: 0.53.1
 
   packages/genuary-2022/01-10,000:
     specifiers:
@@ -1230,37 +997,6 @@ importers:
       vite: 2.9.15
       xo: 0.47.0
 
-  packages/genuary-2023-06-steal:
-    specifiers:
-      '@rupertofly/capture-client': ^1
-      '@rupertofly/h': '*'
-      '@types/d3': ^7.4.0
-      '@types/prettier': ^2
-      '@types/xo': ^0
-      colours: '*'
-      d3: ^7
-      open-simplex-noise: ^2
-      prettier: ^2.5.1
-      rubys-xo-settings: git://github.com/rubyquaildesign/rubys-xo-settings
-      typescript: ^4.4.4
-      vite: ^3
-      xo: ^0
-    dependencies:
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      colours: link:../colours
-      d3: 7.8.0
-      open-simplex-noise: 2.5.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.53.1
-      typescript: 4.9.4
-      vite: 3.2.5
-      xo: 0.53.1
-
   packages/h:
     specifiers:
       '@rupertofly/capture-client': ^1.2.2
@@ -1383,37 +1119,6 @@ importers:
       vite: 3.2.5
       xo: 0.47.0
 
-  packages/pattern-blobs:
-    specifiers:
-      '@rupertofly/capture-client': ^1.1.1
-      '@rupertofly/h': '*'
-      '@types/d3': ^7.4.0
-      '@types/prettier': ^2
-      '@types/xo': ^0
-      colours: '*'
-      d3: ^7
-      open-simplex-noise: ^2.5.0
-      prettier: ^2.5.1
-      rubys-xo-settings: git://github.com/rubyquaildesign/rubys-xo-settings
-      typescript: ^4.4.4
-      vite: ^2.7.2
-      xo: ^0.47.0
-    dependencies:
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      colours: link:../colours
-      d3: 7.8.0
-      open-simplex-noise: 2.5.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.47.0
-      typescript: 4.9.4
-      vite: 2.9.15
-      xo: 0.47.0
-
   packages/pg-clip:
     specifiers:
       '@rupertofly/h': workspace:*
@@ -1436,37 +1141,6 @@ importers:
       typescript: 4.9.4
       vite: 4.0.4
       xo: 0.53.1
-
-  packages/test-re:
-    specifiers:
-      '@rupertofly/capture-client': ^1.1.1
-      '@rupertofly/h': '*'
-      '@types/d3': ^7.4.0
-      '@types/prettier': ^2
-      '@types/xo': ^0
-      colours: '*'
-      d3: ^7
-      open-simplex-noise: ^2.5.0
-      prettier: ^2.5.1
-      rubys-xo-settings: git://github.com/rubyquaildesign/rubys-xo-settings
-      typescript: ^4.4.4
-      vite: ^3
-      xo: ^0.47.0
-    dependencies:
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      colours: link:../colours
-      d3: 7.8.0
-      open-simplex-noise: 2.5.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.47.0
-      typescript: 4.9.4
-      vite: 3.2.5
-      xo: 0.47.0
 
   packages/testing-template:
     specifiers:
@@ -1534,37 +1208,6 @@ importers:
       typescript: 4.9.4
       xo: 0.47.0
 
-  packages/twa:
-    specifiers:
-      '@rupertofly/capture-client': ^1.1.1
-      '@rupertofly/h': '*'
-      '@types/d3': ^7.4.0
-      '@types/prettier': ^2
-      '@types/xo': ^0
-      colours: '*'
-      d3: ^7
-      open-simplex-noise: ^2.5.0
-      prettier: ^2.5.1
-      rubys-xo-settings: git://github.com/rubyquaildesign/rubys-xo-settings
-      typescript: ^4.4.4
-      vite: ^3
-      xo: ^0.47.0
-    dependencies:
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      colours: link:../colours
-      d3: 7.8.0
-      open-simplex-noise: 2.5.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.47.0
-      typescript: 4.9.4
-      vite: 3.2.5
-      xo: 0.47.0
-
   packages/wave-function-collapse:
     specifiers:
       '@rupertofly/capture-client': ^1.1.1
@@ -1604,46 +1247,7 @@ importers:
       typescript: 4.9.4
       xo: 0.47.0
 
-  packages/webgl-testing:
-    specifiers:
-      '@rupertofly/capture-client': ^1.1.1
-      '@rupertofly/h': '*'
-      '@types/d3': ^7.1.0
-      '@types/prettier': ^2
-      '@types/xo': ^0
-      colours: '*'
-      d3: ^7
-      open-simplex-noise: ^2.5.0
-      prettier: ^2.5.1
-      regl: ^2.1.0
-      rubys-xo-settings: github:rubyquaildesign/rubys-xo-settings
-      typescript: ^4.4.4
-      vite: ^2.9.10
-      xo: ^0.47.0
-    dependencies:
-      '@rupertofly/capture-client': 1.2.2
-      '@rupertofly/h': link:../h
-      colours: link:../colours
-      d3: 7.8.0
-      open-simplex-noise: 2.5.0
-      regl: 2.1.0
-      rubys-xo-settings: github.com/rubyquaildesign/rubys-xo-settings/a6894da9c5c7f8eb33513762376c852f12c34024_xo@0.47.0
-    devDependencies:
-      '@types/d3': 7.4.0
-      '@types/prettier': 2.7.2
-      '@types/xo': 0.39.5
-      prettier: 2.8.1
-      typescript: 4.9.4
-      vite: 2.9.15
-      xo: 0.47.0
-
 packages:
-
-  /@alenaksu/json-viewer/1.0.1:
-    resolution: {integrity: sha512-IgDHJBexo/H/yOcSiTShqJrEiPqLXlwLerzX3OvC8EYf2Y8uTlrUVFFFnJ1f+nAUHFB/PsQemKTinxw7Zro7nQ==}
-    dependencies:
-      lit: 2.5.0
-    dev: false
 
   /@ampproject/remapping/2.2.0:
     resolution: {integrity: sha512-qRmjj8nj9qmLTQXXmaR1cck3UXSRMPrbsLJAasZpF+t3riI71BXed5ebIOYwQntykeZuhjsdweEc9BxH5Jc26w==}
@@ -2149,10 +1753,6 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
-  /@lit/reactive-element/1.5.0:
-    resolution: {integrity: sha512-fQh9FDK0LPTwDk+0HhSZEtb8K0LTN1wXerwpGrWA+a8tWulYRDLI4vQDWp4GOIsewn0572KYV/oZ3+492D7osA==}
-    dev: false
-
   /@nicolo-ribaudo/eslint-scope-5-internals/5.1.1-v1:
     resolution: {integrity: sha512-54/JRvkLIzzDWshCWfuhadfrfZVPiElY8Fcgmg1HroEly/EDSszzhBAsarCux+D/kOslTRquNzuyGSmUSTTHGg==}
     dependencies:
@@ -2483,10 +2083,6 @@ packages:
   /@types/tough-cookie/4.0.2:
     resolution: {integrity: sha512-Q5vtl1W5ue16D+nIaW8JWebSSraJVlK+EthKn7e7UcD4KWsaSJ8BqGPXNaPghgtcn/fhvrN17Tv8ksUsQpiplw==}
     dev: true
-
-  /@types/trusted-types/2.0.2:
-    resolution: {integrity: sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==}
-    dev: false
 
   /@types/xo/0.39.5:
     resolution: {integrity: sha512-s0nxeZhocJTFmomUNE3o/MbuOirnNUuMs9qqyIeis6BwKsxHGa+kr1/VeOvsYGx4PNo53o4evk0jzqb/ueS0RQ==}
@@ -5329,27 +4925,6 @@ packages:
       '@types/emscripten': 1.39.6
     dev: false
 
-  /lit-element/3.2.2:
-    resolution: {integrity: sha512-6ZgxBR9KNroqKb6+htkyBwD90XGRiqKDHVrW/Eh0EZ+l+iC+u+v+w3/BA5NGi4nizAVHGYvQBHUDuSmLjPp7NQ==}
-    dependencies:
-      '@lit/reactive-element': 1.5.0
-      lit-html: 2.5.0
-    dev: false
-
-  /lit-html/2.5.0:
-    resolution: {integrity: sha512-bLHosg1XL3JRUcKdSVI0sLCs0y1wWrj2sqqAN3cZ7bDDPNgmDHH29RV48x6Wz3ZmkxIupaE+z7uXSZ/pXWAO1g==}
-    dependencies:
-      '@types/trusted-types': 2.0.2
-    dev: false
-
-  /lit/2.5.0:
-    resolution: {integrity: sha512-DtnUP6vR3l4Q8nRPPNBD+UxbAhwJPeky+OVbi3pdgMqm0g57xFSl1Sj64D1rIB+nVNdiVVg8YxB0hqKjvdadZA==}
-    dependencies:
-      '@lit/reactive-element': 1.5.0
-      lit-element: 3.2.2
-      lit-html: 2.5.0
-    dev: false
-
   /load-tsconfig/0.2.3:
     resolution: {integrity: sha512-iyT2MXws+dc2Wi6o3grCFtGXpeMvHmJqS27sMPGtV2eUu4PeFnG+33I8BlFK1t1NWMjOpcx9bridn5yxLDX2gQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -6942,39 +6517,6 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vite/4.0.3:
-    resolution: {integrity: sha512-HvuNv1RdE7deIfQb8mPk51UKjqptO/4RXZ5yXSAvurd5xOckwS/gg8h9Tky3uSbnjYTgUm0hVCet1cyhKd73ZA==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': '>= 14'
-      less: '*'
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-    dependencies:
-      esbuild: 0.16.12
-      postcss: 8.4.20
-      resolve: 1.22.1
-      rollup: 3.9.0
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
   /vite/4.0.3_@types+node@13.13.52:
     resolution: {integrity: sha512-HvuNv1RdE7deIfQb8mPk51UKjqptO/4RXZ5yXSAvurd5xOckwS/gg8h9Tky3uSbnjYTgUm0hVCet1cyhKd73ZA==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -7170,6 +6712,11 @@ packages:
     resolution: {integrity: sha512-QHRIpaPSG7tK7PX4K4fqe0V4EH1u2IkM7Pr356u1fKcVsZskw7i9gfEqyBLsnnc4e4Y8gnLtIqasLJsGPqM8sA==}
     engines: {node: '>=12.20'}
     hasBin: true
+    peerDependencies:
+      webpack: '>=1.11.0'
+    peerDependenciesMeta:
+      webpack:
+        optional: true
     dependencies:
       '@eslint/eslintrc': 1.4.1
       '@typescript-eslint/eslint-plugin': 5.47.1_axni7f4fgvh6tlufnh6hwgsifq
@@ -7210,7 +6757,6 @@ packages:
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - supports-color
-      - webpack
     bundledDependencies:
       - '@typescript-eslint/eslint-plugin'
       - '@typescript-eslint/parser'
@@ -7220,6 +6766,11 @@ packages:
     resolution: {integrity: sha512-/2R8SPehv1UhiIqJ9uSvrAjslcoygICNsUlEb/Zf2V6rMtr7YCoggc6hlt6b/kbncpR989Roqt6AvEO779dFxw==}
     engines: {node: '>=14.16'}
     hasBin: true
+    peerDependencies:
+      webpack: '>=1.11.0'
+    peerDependenciesMeta:
+      webpack:
+        optional: true
     dependencies:
       '@eslint/eslintrc': 1.4.1
       '@typescript-eslint/eslint-plugin': 5.47.1_axni7f4fgvh6tlufnh6hwgsifq
@@ -7260,7 +6811,6 @@ packages:
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - supports-color
-      - webpack
     dev: true
     bundledDependencies:
       - '@typescript-eslint/eslint-plugin'
