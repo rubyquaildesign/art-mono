@@ -149,7 +149,6 @@ const testCallback = Object.assign(new b2d.JSQueryCallback(), {
 		particleSystem: number | Box2D.b2ParticleSystem,
 		index: number,
 	): boolean {
-		console.log(particleSystem, index);
 		if (!shouldDrain) shouldDrain = true;
 		return true;
 	},
@@ -204,6 +203,9 @@ const dumpCallback = Object.assign(new b2d.JSQueryCallback(), {
 		return true;
 	},
 });
+const pcl = b2d.getPointer(particleSystem.GetPositionBuffer());
+console.log(b2d.HEAPF32.buffer.slice(pcl, pcl + 128));
+
 function render() {
 	ctx.fillStyle = c.white;
 	ctx?.fillRect(0, 0, 800, 600);
@@ -219,26 +221,40 @@ function render() {
 		b2d.sizeof(b2d.b2Vec2),
 		b2d.b2Vec2,
 	);
-
-	for (const element of pointBuffer) {
-		const [x, y] = [element.x * ratio, element.y * ratio];
-		ctx.fillStyle = '#7e1911';
-		h.drawDot([x, y], particleSystem.GetRadius() * ratio, ctx);
+	const pcl = b2d.getPointer(particleSystem.GetPositionBuffer());
+	const array = new Float32Array(b2d.HEAP8.buffer, pcl, l * 2);
+	for (let i = 0; i < array.length; i += 2) {
+		const x = array[i] * ratio;
+		const y = array[i + 1] * ratio;
+		ctx.beginPath();
+		ctx.fillStyle = '#fe5951';
+		h.drawDot([x, y], particleSystem.GetRadius() * ratio + 2, ctx);
 		ctx.fill();
-		// console.log([x, y]);
 	}
+
+	// for (const element of pointBuffer) {
+	// 	const [x, y] = [element.x * ratio, element.y * ratio];
+	// 	ctx.fillStyle = '#7e1911';
+	// 	h.drawDot([x, y], particleSystem.GetRadius() * ratio, ctx);
+	// 	ctx.fill();
+	// 	// console.log([x, y]);
+	// }
 
 	const count = particleSystem.GetParticleCount();
 	ctx.fillText(count.toString(10), 50, 50);
 	ctx.fillText((1000 / lastFrameTime).toFixed(1), 50, 80);
 
 	if (!((frameCount - 1) % 60)) {
-		console.log(lastFrameTime);
 	}
 
 	if (frameCount % 10 === 0) {
 		particleSystem.CreateParticleGroup(addGroup);
 		particleSystem.QueryAABB(testCallback, testAaBb);
+	}
+
+	if (frameCount === 50) {
+		const pcl = b2d.getPointer(particleSystem.GetPositionBuffer());
+		console.log(new Float32Array(b2d.HEAP8.buffer.slice(pcl, pcl + 128)));
 	}
 
 	particleSystem.DestroyParticlesInShape(badShape, 0);
