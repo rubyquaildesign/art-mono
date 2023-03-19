@@ -5,18 +5,24 @@
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"launch": "fish -c 'launchchrome 3000'"
+		"launch": "fish -c 'launchchrome 3000'",
+		"transform-svg": "tsx transform_svg.mts"
 	},
 	"devDependencies": {
 		"@types/d3": "^*",
 		"@types/dat.gui": "^0.7.7",
+		"@types/jsdom": "^16.2.15",
 		"@types/prettier": "^*",
 		"@types/xo": "^*",
+		"jsdom": "^16.7.0",
 		"prettier": "^2.5.1",
 		"rubys-xo-settings": "git://github.com/rubyquaildesign/rubys-xo-settings",
+		"tsx": "^3.12.5",
 		"typescript": "^*",
 		"vite": "^*",
-		"xo": "^*"
+		"vite-plugin-glslify": "^2.0.1",
+		"xo": "^*",
+		"zx": "^7.2.1"
 	},
 	"dependencies": {
 		"@rupertofly/capture-client": "^*",
@@ -26,6 +32,8 @@
 		"colours": "*",
 		"d3": "^*",
 		"dat.gui": "^0.7.9",
+		"glsl-aastep": "^1.0.1",
+		"glsl-fast-gaussian-blur": "^1.0.2",
 		"open-simplex-noise": "^*",
 		"regl": "^*"
 	}

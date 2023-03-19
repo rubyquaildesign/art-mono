@@ -5,7 +5,7 @@ import * as c from 'colours';
 const canvas = document.querySelector<HTMLCanvasElement>('#canvas')!;
 const [width, height] = [canvas.width, canvas.height];
 
-const ctx = canvas.getContext('2d')!;
+const ctx = canvas.getContext('webgl')!;
 
 const {
 	drawLoop,

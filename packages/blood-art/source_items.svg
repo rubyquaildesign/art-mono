@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="800px" height="600px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <rect id="Exhbition-Size" serif:id="Exhbition Size" x="0" y="0" width="800" height="600" style="fill:none;"/>
+    <g id="Exhbition-Size1" serif:id="Exhbition Size">
+        <g id="Collisions">
+            <g id="Cup-Collisions" serif:id="Cup Collisions">
+                <path id="cupLeft" d="M340.023,504.586L330.162,379.283L331.164,379.283L341,504.26L341,504.651L425,504.651L447,358" style="fill:none;stroke:#0433ff;stroke-width:1px;"/>
+                <path id="cupRight" d="M339,358L359.5,494.651L350.275,494.651L340.408,369.283L340.131,369.305L340.131,369.283L320.131,369.283L320.131,379.283L333.079,531.801L368,548" style="fill:none;stroke:#0433ff;stroke-width:1px;"/>
+                <path id="backfill" d="M416.142,546.96L425.01,504.586" style="fill:none;stroke:#0433ff;stroke-width:1px;"/>
+            </g>
+            <path id="handCollision" d="M477.432,259.817L630,120" style="fill:none;stroke:#0433ff;stroke-width:1px;"/>
+            <path id="sickleCollision" d="M383.565,145L360.71,121.151L366.469,108.509L391.097,143.078" style="fill:none;stroke:#0433ff;stroke-width:1px;"/>
+        </g>
+        <g id="Zones">
+            <path id="Force_PushUp" d="M341.094,378L330.862,378.805L339.929,494L350.16,493.195L341.094,378Z" style="fill:#7e1911;"/>
+            <rect id="Drain_Trigger" x="320.131" y="369.283" width="10.869" height="10" style="fill:#00f900;"/>
+            <path id="Give_Shape" d="M586.845,128.579L537.237,173.246L550.62,188.109L600.228,143.442L586.845,128.579Z" style="fill:#ff2600;"/>
+            <circle id="Ellipse-Shape" serif:id="Ellipse Shape" cx="368" cy="119.681" r="4.5" style="fill:#ff2600;"/>
+        </g>
+    </g>
+</svg>

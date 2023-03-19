@@ -14,5 +14,5 @@
 		"noUnusedParameters": false,
 		"noImplicitReturns": false
 	},
-	"include": ["./src", "./main.ts", "public/liquidfun.js"]
+	"include": ["./src", "./main.ts"]
 }

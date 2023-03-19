@@ -4,10 +4,10 @@ import { capital } from 'case';
 
 export const settings = {
 	gravity: 10,
-	simulationRatio: 100,
+	simulationRatio: 60,
 	vesselFriction: 5,
 	staticPressureRelaxation: 0.5,
-	viscosityStrength: 0.5,
+	viscosityStrength: 0.4,
 	staticPressureIterations: 12,
 	gravityScale: 3,
 	particleSimRadius: 0.025,
@@ -15,7 +15,7 @@ export const settings = {
 	particleStepIterations: 6,
 	particleRenderRadius: 4,
 	particleBlurRadius: 4,
-	liquidRenderThreshold: 0.5,
+	liquidRenderThreshold: 0.2,
 };
 function controllerBuilder<O extends Record<string, unknown> = typeof settings>(
 	gui: GUI,
