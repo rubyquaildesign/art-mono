@@ -19,8 +19,9 @@ export class Tween<U = number> {
 	#reversed = false;
 	#delayFrames = 0;
 	#currentFrame = 0;
+	completed = false;
 	#interpFunc: InterpFunc<U> = t => ({} as any as U);
-	#chainedTweens: Array<Tween<any>> = [];
+	chainedTweens: Array<Tween<any>> = [];
 	#id = seq.nextId();
 	#isChainDone = false;
 	#group: Group;
@@ -65,6 +66,7 @@ export class Tween<U = number> {
 		this.#isPaused = false;
 		this.#isChainDone = false;
 		this.#currentFrame = 0 - this.#delayFrames;
+		this.completed = false;
 	}
 
 	update(autoStart = true): boolean {
@@ -108,11 +110,12 @@ export class Tween<U = number> {
 				return true;
 			}
 
-			for (const chainedTween of this.#chainedTweens) {
+			for (const chainedTween of this.chainedTweens) {
 				chainedTween.start();
 			}
 
 			this.#isPlaying = false;
+			this.completed = true;
 			return false;
 		}
 
@@ -136,7 +139,7 @@ export class Tween<U = number> {
 	}
 
 	stopChained() {
-		for (const tween of this.#chainedTweens) {
+		for (const tween of this.chainedTweens) {
 			tween.stop();
 		}
 
@@ -206,7 +209,7 @@ export class Tween<U = number> {
 	}
 
 	chain(...tweens: Array<Tween<any>>) {
-		this.#chainedTweens = tweens;
+		this.chainedTweens = tweens;
 		return this;
 	}
 
