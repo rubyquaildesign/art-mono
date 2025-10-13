@@ -1,0 +1,12 @@
+unstable_javascript:
+  packageManager: 'pnpm'
+
+unstable_pnpm:
+  version: '^10'
+
+typescript:
+  createMissingConfig: true
+  includeProjectReferenceSources: true
+  includeSharedTypes: true
+  routeOutDirToCache: true
+  syncProjectReferences: true
