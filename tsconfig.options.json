@@ -11,6 +11,8 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "strict": true,
-    "target": "esnext"
+    "target": "esnext",
+    "erasableSyntaxOnly": true,
+    "moduleDetection": "force",
   }
 }

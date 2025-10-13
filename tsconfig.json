@@ -1,4 +1,12 @@
 {
-  "extends":"./tooling/typescript/tsconfig.options.json",
-  "files": []
+  "extends": "./tsconfig.options.json",
+  "files": [],
+  "references": [
+    {
+      "path": "apps/thought-network-terminal"
+    },
+    {
+      "path": "packages/quail-art"
+    }
+  ]
 }

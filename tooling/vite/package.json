@@ -1,0 +1,7 @@
+{
+  "name": "@ruby-art-mono/vite",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "files": ["*.ts"]
+}

@@ -11,6 +11,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10.18.2",
   "devDependencies": {
-    "@biomejs/biome": "2.2.5"
+    "@biomejs/biome": "2.2.5",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9"
   }
 }

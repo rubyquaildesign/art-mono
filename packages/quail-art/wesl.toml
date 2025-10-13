@@ -1,0 +1,1 @@
+weslFiles = ['./src/webgpu/shaders/**/*.w[eg]sl']

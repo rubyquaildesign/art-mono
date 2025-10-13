@@ -1,0 +1,11 @@
+# https://moonrepo.dev/docs/config/template
+$schema: '../../.moon/cache/schemas/template.json'
+
+title: 'Artwork'
+description: 'Artwork'
+variables:
+  name:
+    type: 'string'
+    default: ''
+    required: true
+    prompt: 'Package name?'
