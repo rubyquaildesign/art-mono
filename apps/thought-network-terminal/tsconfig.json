@@ -1,15 +1,9 @@
 {
-  "extends": "../../tsconfig.options.json",
-  "include": [
-    "src/**/*"
-  ],
-  "compilerOptions": {
-    "noEmit": true,
-    "lib": [
-      "ES2024",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "outDir": "../../.moon/cache/types/apps/thought-network-terminal"
-  }
+	"extends": "../../tsconfig.options.json",
+	"include": ["src/**/*"],
+	"compilerOptions": {
+		"noEmit": true,
+		"lib": ["ES2024", "DOM", "DOM.Iterable"],
+		"outDir": "../../.moon/cache/types/apps/thought-network-terminal"
+	}
 }

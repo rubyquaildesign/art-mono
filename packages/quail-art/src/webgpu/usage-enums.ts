@@ -3,14 +3,8 @@ const t = GPUTextureUsage;
 /** @enum {GPUFlagsConstant} */
 const TexUsage = {
 	...t,
-	all:
-		t.COPY_SRC |
-		t.COPY_DST |
-		t.TEXTURE_BINDING |
-		t.STORAGE_BINDING |
-		t.RENDER_ATTACHMENT,
-	allButStorage:
-		t.COPY_SRC | t.COPY_DST | t.TEXTURE_BINDING | t.RENDER_ATTACHMENT,
+	all: t.COPY_SRC | t.COPY_DST | t.TEXTURE_BINDING | t.STORAGE_BINDING | t.RENDER_ATTACHMENT,
+	allButStorage: t.COPY_SRC | t.COPY_DST | t.TEXTURE_BINDING | t.RENDER_ATTACHMENT,
 	allCopy: t.COPY_DST | t.COPY_SRC,
 	texAndRender: t.TEXTURE_BINDING | t.RENDER_ATTACHMENT,
 } as const;

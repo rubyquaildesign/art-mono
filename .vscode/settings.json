@@ -1,17 +1,14 @@
 {
   "yaml.schemas": {
-    "./.moon/cache/schemas/project.json": [
-      "**/moon.yml"
-    ],
-    "./.moon/cache/schemas/tasks.json": [
-      ".moon/tasks.yml",
-      ".moon/tasks/**/*.yml"
-    ],
-    "./.moon/cache/schemas/template.json": [
-      "**/template.yml"
-    ],
-    "./.moon/cache/schemas/workspace.json": [
-      ".moon/workspace.yml"
-    ]
+    "./.moon/cache/schemas/project.json": ["**/moon.yml"],
+    "./.moon/cache/schemas/tasks.json": [".moon/tasks.yml", ".moon/tasks/**/*.yml"],
+    "./.moon/cache/schemas/template.json": ["**/template.yml"],
+    "./.moon/cache/schemas/workspace.json": [".moon/workspace.yml"]
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "fronterior.biome-monorepo",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
   }
 }

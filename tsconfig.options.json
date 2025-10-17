@@ -1,18 +1,18 @@
 {
-  "$schema": "https://www.schemastore.org/tsconfig",
-  "compilerOptions": {
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
-    "incremental": true,
-    "noEmitOnError": true,
-    "skipLibCheck": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "target": "esnext",
-    "erasableSyntaxOnly": true,
-    "moduleDetection": "force",
-  }
+	"$schema": "https://www.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"composite": true,
+		"declaration": true,
+		"declarationMap": true,
+		"emitDeclarationOnly": true,
+		"incremental": true,
+		"noEmitOnError": true,
+		"skipLibCheck": true,
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"strict": true,
+		"target": "esnext",
+		"erasableSyntaxOnly": true,
+		"moduleDetection": "force"
+	}
 }

@@ -1,12 +1,12 @@
 {
-  "extends": "./tsconfig.options.json",
-  "files": [],
-  "references": [
-    {
-      "path": "apps/thought-network-terminal"
-    },
-    {
-      "path": "packages/quail-art"
-    }
-  ]
+	"extends": "./tsconfig.options.json",
+	"files": [],
+	"references": [
+		{
+			"path": "apps/thought-network-terminal"
+		},
+		{
+			"path": "packages/quail-art"
+		}
+	]
 }

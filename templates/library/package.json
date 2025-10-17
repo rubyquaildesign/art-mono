@@ -1,6 +1,6 @@
 {
-  "name": "@rubyquail-art/{{ name }}",
-  "version": "0.1.0",
-  "type": "module",
-  "exports": "./src/index.ts"
+	"name": "@rubyquail-art/{{ name }}",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": "./src/index.ts"
 }

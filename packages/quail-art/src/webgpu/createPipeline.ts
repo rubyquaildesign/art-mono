@@ -1,7 +1,4 @@
-import {
-	makeBindGroupLayoutDescriptors,
-	type ShaderDataDefinitions,
-} from 'webgpu-utils';
+import { makeBindGroupLayoutDescriptors, type ShaderDataDefinitions } from 'webgpu-utils';
 import './setup.js';
 import { fsPipelineVertState, vertDefinitions } from './vert-module.js';
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
@@ -29,9 +26,7 @@ export function createPPPipelineAndLayouts(
 		[vertDefinitions, fragData.dataDefinition],
 		rpDescriptor,
 	);
-	const bindGroupLayouts = bindGroupLayoutDescriptors.map((bgld) =>
-		device.createBindGroupLayout(bgld),
-	);
+	const bindGroupLayouts = bindGroupLayoutDescriptors.map((bgld) => device.createBindGroupLayout(bgld));
 	const renderPipelineLayout = device.createPipelineLayout({
 		bindGroupLayouts,
 	});

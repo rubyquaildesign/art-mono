@@ -1,9 +1,9 @@
 {
-  "name": "@rubyquaildesign/thought-network-terminal",
-  "version": "0.1.0",
-  "type": "module",
-  "exports": "./src/index.ts",
-    "devDependencies": {
-    "@ruby-art-mono/vite":"workspace:*"
-  }
+	"name": "@rubyquaildesign/thought-network-terminal",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": "./src/index.ts",
+	"devDependencies": {
+		"@ruby-art-mono/vite": "workspace:*"
+	}
 }

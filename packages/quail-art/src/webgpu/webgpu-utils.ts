@@ -10,6 +10,5 @@ export * from './usage-enums.js';
 export * from './copy-pass.js';
 export * from './createPipeline.js';
 export * from './color-correction.js';
-export { buildBlur } from './blur-filter.js';
-export * from '../entry/main.js';
+// export { buildBlur } from './blur-filter.js';
 export * from './resources.js';
