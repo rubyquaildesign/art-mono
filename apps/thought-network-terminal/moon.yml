@@ -1,2 +1,9 @@
 language: typescript
 type: library
+
+
+tasks:
+  dev:
+    local: true
+    command: 'vite dev'
+    

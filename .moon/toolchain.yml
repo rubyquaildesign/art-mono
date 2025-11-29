@@ -4,6 +4,9 @@ unstable_javascript:
 unstable_pnpm:
   version: '^10'
 
+unstable_node:
+  version: '^24'
+
 typescript:
   createMissingConfig: true
   includeProjectReferenceSources: true

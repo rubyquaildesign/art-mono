@@ -1,0 +1,37 @@
+{
+	"folders": [
+		{
+			"name": "✨ art-mono",
+			"path": "."
+		},
+		{
+			"name": "🚀 @rubyquaildesign/thought-network-terminal",
+			"path": "apps/thought-network-terminal"
+		},
+		{
+			"name": "📦 @rubyquail-art/quail-art",
+			"path": "packages/quail-art"
+		},
+		{
+			"name": "⚙️ @ruby-art-mono/vite",
+			"path": "tooling/vite"
+		}
+	],
+	"settings": {
+		"yaml.schemas": {
+			"./.moon/cache/schemas/project.json": [
+				"**/moon.yml"
+			],
+			"./.moon/cache/schemas/tasks.json": [
+				".moon/tasks.yml",
+				".moon/tasks/**/*.yml"
+			],
+			"./.moon/cache/schemas/template.json": [
+				"**/template.yml"
+			],
+			"./.moon/cache/schemas/workspace.json": [
+				".moon/workspace.yml"
+			]
+		}
+	}
+}
